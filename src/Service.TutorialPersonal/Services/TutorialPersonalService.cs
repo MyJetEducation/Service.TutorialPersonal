@@ -30,7 +30,7 @@ namespace Service.TutorialPersonal.Services
 
 			foreach ((_, EducationStructureUnit unit) in Structure.Units)
 			{
-				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgress(userId, unit);
+				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgressAsync(userId, unit);
 				if (unitProgress == null)
 					break;
 
@@ -42,7 +42,7 @@ namespace Service.TutorialPersonal.Services
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TextAsync(PersonalTaskTextGrpcRequest request)
 		{
-			return await _tutorialHelperService.SetTaskProgress(request.UserId, Unit1, Unit1.Tasks[1], request.IsRetry, request.Duration);
+			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[1], request.IsRetry, request.Duration);
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TestAsync(PersonalTaskTestGrpcRequest request)
@@ -55,7 +55,7 @@ namespace Service.TutorialPersonal.Services
 				+ CheckAnswer(20f, answers, 4, 1, 2, 3)
 				+ CheckAnswer(20f, answers, 5, 1, 3);
 
-			return await _tutorialHelperService.SetTaskProgress(request.UserId, Unit1, Unit1.Tasks[2], request.IsRetry, request.Duration, progress);
+			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[2], request.IsRetry, request.Duration, progress);
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request)
@@ -64,7 +64,7 @@ namespace Service.TutorialPersonal.Services
 				? MaxAnswerValuePrc
 				: MinAnswerValuePrc;
 
-			return await _tutorialHelperService.SetTaskProgress(request.UserId, Unit1, Unit1.Tasks[3], request.IsRetry, request.Duration, progress);
+			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[3], request.IsRetry, request.Duration, progress);
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TrueFalseAsync(PersonalTaskTrueFalseGrpcRequest request)
@@ -77,17 +77,17 @@ namespace Service.TutorialPersonal.Services
 				+ CheckAnswer(20f, answers, 4, false)
 				+ CheckAnswer(20f, answers, 5, true);
 
-			return await _tutorialHelperService.SetTaskProgress(request.UserId, Unit1, Unit1.Tasks[4], request.IsRetry, request.Duration, progress);
+			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[4], request.IsRetry, request.Duration, progress);
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1GameAsync(PersonalTaskGameGrpcRequest request)
 		{
-			return await _tutorialHelperService.SetTaskProgress(request.UserId, Unit1, Unit1.Tasks[5], request.IsRetry, request.Duration);
+			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[5], request.IsRetry, request.Duration);
 		}
 
 		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request) => new FinishUnitGrpcResponse
 		{
-			Unit = await _tutorialHelperService.GetUnitProgress(request.UserId, Structure.Units[request.Unit]),
+			Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, Structure.Units[request.Unit]),
 			Achievements = new AchievementStateGrpcModel
 			{
 				Achievements = new[] {"Viola", "Agnition"}

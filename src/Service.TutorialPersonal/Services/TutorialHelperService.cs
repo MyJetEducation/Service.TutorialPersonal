@@ -14,16 +14,6 @@ using Service.TutorialPersonal.Grpc.Models.State;
 
 namespace Service.TutorialPersonal.Services
 {
-	public interface ITutorialHelperService
-	{
-		ValueTask<TestScoreGrpcResponse> SetTaskProgress(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null);
-		ValueTask<PersonalStateUnitGrpcModel> GetUnitProgress(Guid? userId, EducationStructureUnit unit);
-		ValueTask<TaskEducationProgressGrpcModel> GetTaskProgress(Guid? userId, int unit, int task);
-		ValueTask<bool> HasRetryCount(Guid? userId);
-		ValueTask<bool> GetRetryResult(TaskEducationProgressGrpcModel taskProgress, Guid? userId, EducationStructureUnit unit);
-		bool CanRetryByTime(TaskEducationProgressGrpcModel progressGrpcModel);
-	}
-
 	public class TutorialHelperService : ITutorialHelperService
 	{
 		public const int MaxAnswerValuePrc = 100;
@@ -40,17 +30,17 @@ namespace Service.TutorialPersonal.Services
 			_systemClock = systemClock;
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> SetTaskProgress(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null)
+		public async ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null)
 		{
 			bool canAnswer = await ValidatePostition(userId, unit, task);
 			if (!canAnswer)
 				return new TestScoreGrpcResponse {IsSuccess = false};
 
-			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgress(userId, unit.Unit, task.Task);
+			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit.Unit, task.Task);
 
 			if (taskProgress is { HasProgress: false } && isRetry //retry without normal answered task
 				|| taskProgress is { HasProgress: true, Value: MaxAnswerValuePrc } //retry 100% score task
-				|| isRetry && !await GetRetryResult(taskProgress, userId, unit)) //retry denied
+				|| isRetry && !await GetRetryResultAsync(taskProgress, userId, unit)) //retry denied
 				return new TestScoreGrpcResponse {IsSuccess = false};
 
 			CommonGrpcResponse response = await _progressService.SetProgressAsync(new SetEducationProgressGrpcRequest
@@ -66,7 +56,7 @@ namespace Service.TutorialPersonal.Services
 			return new TestScoreGrpcResponse
 			{
 				IsSuccess = response.IsSuccess,
-				Unit = await GetUnitProgress(userId, unit)
+				Unit = await GetUnitProgressAsync(userId, unit)
 			};
 		}
 
@@ -83,12 +73,12 @@ namespace Service.TutorialPersonal.Services
 			else
 				task = unit.Tasks[task.Task - 1];
 
-			TaskEducationProgressGrpcModel progress = await GetTaskProgress(userId, unit.Unit, task.Task);
+			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, unit.Unit, task.Task);
 
 			return progress?.HasProgress == true;
 		}
 
-		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgress(Guid? userId, EducationStructureUnit unit)
+		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, EducationStructureUnit unit)
 		{
 			int unitId = unit.Unit;
 
@@ -114,7 +104,7 @@ namespace Service.TutorialPersonal.Services
 			{
 				int taskId = task.Task;
 
-				TaskEducationProgressGrpcModel taskProgress = await GetTaskProgress(userId, unitId, taskId);
+				TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unitId, taskId);
 				if (!(taskProgress is { HasProgress: true }))
 					break;
 
@@ -122,14 +112,14 @@ namespace Service.TutorialPersonal.Services
 				{
 					TaskId = taskId,
 					TestScore = taskProgress.Value,
-					CanRetry = CanRetryByTime(taskProgress) || await HasRetryCount(userId)
+					CanRetry = CanRetryByTime(taskProgress) || await HasRetryCountAsync(userId)
 				});
 			}
 
 			return unitProgressItem;
 		}
 
-		public async ValueTask<TaskEducationProgressGrpcModel> GetTaskProgress(Guid? userId, int unit, int task)
+		public async ValueTask<TaskEducationProgressGrpcModel> GetTaskProgressAsync(Guid? userId, int unit, int task)
 		{
 			TaskEducationProgressGrpcResponse taskProgressResponse = await _progressService.GetTaskProgressAsync(new GetTaskEducationProgressGrpcRequest
 			{
@@ -142,12 +132,12 @@ namespace Service.TutorialPersonal.Services
 			return taskProgressResponse?.Progress;
 		}
 
-		public async ValueTask<bool> GetRetryResult(TaskEducationProgressGrpcModel taskProgress, Guid? userId, EducationStructureUnit unit)
+		public async ValueTask<bool> GetRetryResultAsync(TaskEducationProgressGrpcModel taskProgress, Guid? userId, EducationStructureUnit unit)
 		{
 			if (CanRetryByTime(taskProgress))
 				return true;
 
-			if (!await HasRetryCount(userId))
+			if (!await HasRetryCountAsync(userId))
 				return false;
 
 			CommonGrpcResponse retryDecreaseResponse = await _retryService.DecreaseRetryCountAsync(new DecreaseRetryCountGrpcRequest
@@ -162,7 +152,7 @@ namespace Service.TutorialPersonal.Services
 			return !retryDecreaseResponse.IsSuccess;
 		}
 
-		public async ValueTask<bool> HasRetryCount(Guid? userId)
+		public async ValueTask<bool> HasRetryCountAsync(Guid? userId)
 		{
 			RetryCountGrpcResponse retryResponse = await _retryService.GetRetryCountAsync(new GetRetryCountGrpcRequest
 			{
