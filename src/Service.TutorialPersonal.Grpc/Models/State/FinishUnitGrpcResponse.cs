@@ -9,9 +9,6 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public PersonalStateUnitGrpcModel Unit { get; set; }
 
 		[DataMember(Order = 2)]
-		public AchievementStateGrpcModel Achievements { get; set; }
-
-		[DataMember(Order = 3)]
 		public TotalProgressStateGrpcModel TotalProgress { get; set; }
 	}
 }

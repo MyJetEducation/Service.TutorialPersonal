@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models.Education;
@@ -23,12 +22,7 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<PersonalStateGrpcResponse> GetDashboardStateAsync(PersonalSelectTaskUnitGrpcRequest request)
 		{
 			Guid? userId = request.UserId;
-
-			var result = new PersonalStateGrpcResponse
-			{
-				Available = true,
-				Units = new List<PersonalStateUnitGrpcModel>()
-			};
+			var units = new List<PersonalStateUnitGrpcModel>();
 
 			foreach ((_, EducationStructureUnit unit) in Structure.Units)
 			{
@@ -36,12 +30,23 @@ namespace Service.TutorialPersonal.Services
 				if (unitProgress == null)
 					break;
 
-				result.Units.Add(unitProgress);
+				units.Add(unitProgress);
 			}
 
-			result.Duration = result.Units.Sum(model => model.Duration);
-
-			return result;
+			return new PersonalStateGrpcResponse
+			{
+				Available = true,
+				Units = units,
+				Duration = units.Sum(model => model.Duration),
+				TotalProgress = new TotalProgressStateGrpcModel
+				{
+					HabitProgress = 20,
+					HabitName = "The habit of forming savings",
+					SkillProgress = 15,
+					SkillName = "Skill SMART goals",
+					Achievements = new[] {"Starter"}
+				}
+			};
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TextAsync(PersonalTaskTextGrpcRequest request)
@@ -92,17 +97,13 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request) => new FinishUnitGrpcResponse
 		{
 			Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, Structure.Units[request.Unit]),
-			Achievements = new AchievementStateGrpcModel
-			{
-				Achievements = new[] {"Viola", "Agnition"}
-			},
 			TotalProgress = new TotalProgressStateGrpcModel
 			{
 				HabitProgress = 20,
 				HabitName = "The habit of forming savings",
 				SkillProgress = 15,
 				SkillName = "Skill SMART goals",
-				TotalTasksPassed = 0
+				Achievements = new[] {"Starter", "Viola", "Ignition"}
 			}
 		};
 	}

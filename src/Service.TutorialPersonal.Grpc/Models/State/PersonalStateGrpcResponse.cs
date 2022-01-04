@@ -15,5 +15,8 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 
 		[DataMember(Order = 3)]
 		public IList<PersonalStateUnitGrpcModel> Units { get; set; }
+
+		[DataMember(Order = 4)]
+		public TotalProgressStateGrpcModel TotalProgress { get; set; }
 	}
 }

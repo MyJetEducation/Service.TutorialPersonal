@@ -18,6 +18,6 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public string SkillName { get; set; }
 
 		[DataMember(Order = 5)]
-		public int TotalTasksPassed { get; set; }
+		public string[] Achievements { get; set; }
 	}
 }
