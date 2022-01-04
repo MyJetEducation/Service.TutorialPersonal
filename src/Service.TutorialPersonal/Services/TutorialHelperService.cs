@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models;
 using Service.Core.Domain.Models.Education;
 using Service.Core.Grpc.Models;
@@ -117,7 +118,7 @@ namespace Service.TutorialPersonal.Services
 				});
 			}
 
-			unitProgressItem.Duration = new TimeSpan(unitProgressItem.Tasks.Sum(model => model.Duration.Ticks));
+			unitProgressItem.Duration = unitProgressItem.Tasks.Sum(model => model.Duration);
 
 			return unitProgressItem;
 		}

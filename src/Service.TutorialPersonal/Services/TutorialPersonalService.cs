@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
@@ -36,6 +38,8 @@ namespace Service.TutorialPersonal.Services
 
 				result.Units.Add(unitProgress);
 			}
+
+			result.Duration = result.Units.Sum(model => model.Duration);
 
 			return result;
 		}
