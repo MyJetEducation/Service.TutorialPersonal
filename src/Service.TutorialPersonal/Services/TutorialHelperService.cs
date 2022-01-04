@@ -112,9 +112,12 @@ namespace Service.TutorialPersonal.Services
 				{
 					TaskId = taskId,
 					TestScore = taskProgress.Value,
+					Duration = taskProgress.Duration,
 					CanRetry = CanRetryByTime(taskProgress) || await HasRetryCountAsync(userId)
 				});
 			}
+
+			unitProgressItem.Duration = new TimeSpan(unitProgressItem.Tasks.Sum(model => model.Duration.Ticks));
 
 			return unitProgressItem;
 		}
