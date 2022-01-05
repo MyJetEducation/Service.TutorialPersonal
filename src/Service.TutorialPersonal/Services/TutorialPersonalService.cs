@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
-using static Service.TutorialPersonal.Services.TutorialHelperService;
+using static Service.TutorialPersonal.Services.AnswerHelper;
 
 namespace Service.TutorialPersonal.Services
 {
 	public class TutorialPersonalService : ITutorialPersonalService
 	{
-		private static readonly EducationStructureTutorial Structure = EducationStructure.Tutorials[EducationTutorial.PersonalFinance];
-		private static readonly EducationStructureUnit Unit1 = Structure.Units[1];
-
 		private readonly ITutorialHelperService _tutorialHelperService;
 
 		public TutorialPersonalService(ITutorialHelperService tutorialHelperService) => _tutorialHelperService = tutorialHelperService;
 
 		public async ValueTask<PersonalStateGrpcResponse> GetDashboardStateAsync(PersonalSelectTaskUnitGrpcRequest request)
 		{
-			Guid? userId = request.UserId;
 			var units = new List<PersonalStateUnitGrpcModel>();
 
-			foreach ((_, EducationStructureUnit unit) in Structure.Units)
+			foreach ((_, EducationStructureUnit unit) in Tutorial.Units)
 			{
-				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgressAsync(userId, unit);
+				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, unit);
 				if (unitProgress == null)
 					break;
 
@@ -49,6 +44,28 @@ namespace Service.TutorialPersonal.Services
 			};
 		}
 
+		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
+		{
+			var result = new FinishUnitGrpcResponse();
+			if (!Tutorial.Units.TryGetValue(request.Unit, out EducationStructureUnit unit))
+				return result;
+
+			result.Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, unit);
+
+			result.TotalProgress = new TotalProgressStateGrpcModel
+			{
+				HabitProgress = 20,
+				HabitName = "The habit of forming savings",
+				SkillProgress = 15,
+				SkillName = "Skill SMART goals",
+				Achievements = new[] {"Starter", "Viola", "Ignition"}
+			};
+
+			return result;
+		}
+
+		#region Unit1 tasks
+
 		public async ValueTask<TestScoreGrpcResponse> Unit1TextAsync(PersonalTaskTextGrpcRequest request)
 		{
 			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[1], request.IsRetry, request.Duration);
@@ -70,8 +87,8 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request)
 		{
 			float progress = request.Value == 1
-				? MaxAnswerValuePrc
-				: MinAnswerValuePrc;
+				? MaxAnswerProgress
+				: MinAnswerProgress;
 
 			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[3], request.IsRetry, request.Duration, progress);
 		}
@@ -94,17 +111,6 @@ namespace Service.TutorialPersonal.Services
 			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[5], request.IsRetry, request.Duration);
 		}
 
-		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request) => new FinishUnitGrpcResponse
-		{
-			Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, Structure.Units[request.Unit]),
-			TotalProgress = new TotalProgressStateGrpcModel
-			{
-				HabitProgress = 20,
-				HabitName = "The habit of forming savings",
-				SkillProgress = 15,
-				SkillName = "Skill SMART goals",
-				Achievements = new[] {"Starter", "Viola", "Ignition"}
-			}
-		};
+		#endregion
 	}
 }

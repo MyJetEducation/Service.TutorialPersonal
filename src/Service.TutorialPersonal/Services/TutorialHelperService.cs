@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models;
@@ -10,16 +9,12 @@ using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
 using Service.EducationRetry.Grpc;
 using Service.EducationRetry.Grpc.Models;
-using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
 
 namespace Service.TutorialPersonal.Services
 {
 	public class TutorialHelperService : ITutorialHelperService
 	{
-		public const int MaxAnswerValuePrc = 100;
-		public const int MinAnswerValuePrc = 0;
-
 		private readonly IEducationProgressService _progressService;
 		private readonly IEducationRetryService _retryService;
 		private readonly ISystemClock _systemClock;
@@ -33,7 +28,8 @@ namespace Service.TutorialPersonal.Services
 
 		public async ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null)
 		{
-			if (!await ValidatePostition(userId, unit, task)
+			if (userId == null
+				|| !await ValidatePostition(userId, unit, task)
 				|| !await ValidateProgress(userId, unit, isRetry, task.Task))
 				return new TestScoreGrpcResponse {IsSuccess = false};
 
@@ -43,7 +39,7 @@ namespace Service.TutorialPersonal.Services
 				Tutorial = EducationTutorial.PersonalFinance,
 				Unit = unit.Unit,
 				Task = task.Task,
-				Value = progress ?? MaxAnswerValuePrc,
+				Value = progress ?? AnswerHelper.MaxAnswerProgress,
 				Duration = duration
 			});
 
@@ -61,7 +57,7 @@ namespace Service.TutorialPersonal.Services
 			switch (isRetry)
 			{
 				case true when taskProgress is { HasProgress: false } //retry without normal answered task
-					|| taskProgress is { HasProgress: true, Value: MaxAnswerValuePrc } //retry 100% score task
+					|| taskProgress is { HasProgress: true, Value: AnswerHelper.MaxAnswerProgress } //retry 100% score task
 					|| !await GetRetryResultAsync(taskProgress, userId, unit): //retry denied
 				case false when taskProgress is { HasProgress: true }: //re-answer task at not-retry mode
 					return false;
@@ -75,21 +71,27 @@ namespace Service.TutorialPersonal.Services
 			if (unit.Unit == 1 && task.Task == 1)
 				return true;
 
+			EducationStructureUnit prevUnit = AnswerHelper.Tutorial.Units[unit.Unit];
+			EducationStructureTask prevTask;
+
 			if (unit.Unit > 1 && task.Task == 1)
 			{
-				unit = EducationStructure.Tutorials[EducationTutorial.PersonalFinance].Units[unit.Unit - 1];
-				task = unit.Tasks[unit.Tasks.Values.Count - 1];
+				prevUnit = AnswerHelper.Tutorial.Units[unit.Unit - 1];
+				prevTask = unit.Tasks[unit.Tasks.Values.Count - 1];
 			}
 			else
-				task = unit.Tasks[task.Task - 1];
+				prevTask = unit.Tasks[task.Task - 1];
 
-			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, unit.Unit, task.Task);
+			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, prevUnit.Unit, prevTask.Task);
 
 			return progress?.HasProgress == true;
 		}
 
 		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, EducationStructureUnit unit)
 		{
+			if (userId == null)
+				return null;
+
 			int unitId = unit.Unit;
 
 			EducationProgressGrpcResponse unitProgressResponse = await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
@@ -103,12 +105,7 @@ namespace Service.TutorialPersonal.Services
 			if (unitProgress == 0)
 				return null;
 
-			var unitProgressItem = new PersonalStateUnitGrpcModel
-			{
-				Index = unitId,
-				TestScore = unitProgress,
-				Tasks = new List<PersonalStateTaskGrpcModel>()
-			};
+			var tasks = new List<PersonalStateTaskGrpcModel>();
 
 			foreach ((_, EducationStructureTask task) in unit.Tasks)
 			{
@@ -118,7 +115,7 @@ namespace Service.TutorialPersonal.Services
 				if (!(taskProgress is { HasProgress: true }))
 					break;
 
-				unitProgressItem.Tasks.Add(new PersonalStateTaskGrpcModel
+				tasks.Add(new PersonalStateTaskGrpcModel
 				{
 					TaskId = taskId,
 					TestScore = taskProgress.Value,
@@ -127,9 +124,13 @@ namespace Service.TutorialPersonal.Services
 				});
 			}
 
-			unitProgressItem.Duration = unitProgressItem.Tasks.Sum(model => model.Duration);
-
-			return unitProgressItem;
+			return new PersonalStateUnitGrpcModel
+			{
+				Index = unitId,
+				TestScore = unitProgress,
+				Tasks = tasks,
+				Duration = tasks.Sum(model => model.Duration)
+			};
 		}
 
 		public async ValueTask<TaskEducationProgressGrpcModel> GetTaskProgressAsync(Guid? userId, int unit, int task)
@@ -176,23 +177,5 @@ namespace Service.TutorialPersonal.Services
 		}
 
 		public bool CanRetryByTime(TaskEducationProgressGrpcModel progressGrpcModel) => _systemClock.Now.Subtract(progressGrpcModel.WhenFinished).TotalDays >= 1;
-
-		public static float CheckAnswer(float progress, PersonalTaskTestAnswerGrpcModel[] answers, int questionNumber, params int[] answerNumbers)
-		{
-			PersonalTaskTestAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
-
-			return answer != null && answerNumbers.Intersect(answer.Value).Count() == answerNumbers.Length
-				? progress
-				: MinAnswerValuePrc;
-		}
-
-		public static float CheckAnswer(float progress, PersonalTaskTrueFalseAnswerGrpcModel[] answers, int questionNumber, bool answerValue)
-		{
-			PersonalTaskTrueFalseAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
-
-			return answer != null && answer.Value == answerValue
-				? progress
-				: MinAnswerValuePrc;
-		}
 	}
 }
