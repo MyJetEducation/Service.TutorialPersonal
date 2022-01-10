@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models;
 using Service.Core.Domain.Models.Education;
@@ -18,12 +19,14 @@ namespace Service.TutorialPersonal.Services
 		private readonly IEducationProgressService _progressService;
 		private readonly IEducationRetryService _retryService;
 		private readonly ISystemClock _systemClock;
+		private readonly ILogger<TutorialHelperService> _logger;
 
-		public TutorialHelperService(IEducationProgressService progressService, IEducationRetryService retryService, ISystemClock systemClock)
+		public TutorialHelperService(IEducationProgressService progressService, IEducationRetryService retryService, ISystemClock systemClock, ILogger<TutorialHelperService> logger)
 		{
 			_progressService = progressService;
 			_retryService = retryService;
 			_systemClock = systemClock;
+			_logger = logger;
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null)
@@ -32,6 +35,8 @@ namespace Service.TutorialPersonal.Services
 				|| !await ValidatePostition(userId, unit, task)
 				|| !await ValidateProgress(userId, unit, isRetry, task.Task))
 				return new TestScoreGrpcResponse {IsSuccess = false};
+
+			_logger.LogDebug("Try to set progress for user {userId}...", userId);
 
 			CommonGrpcResponse response = await _progressService.SetProgressAsync(new SetEducationProgressGrpcRequest
 			{
@@ -42,6 +47,8 @@ namespace Service.TutorialPersonal.Services
 				Value = progress ?? AnswerHelper.MaxAnswerProgress,
 				Duration = duration
 			});
+
+			_logger.LogDebug("Result: {response}...", response.IsSuccess);
 
 			return new TestScoreGrpcResponse
 			{
@@ -84,7 +91,11 @@ namespace Service.TutorialPersonal.Services
 
 			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, prevUnit.Unit, prevTask.Task);
 
-			return progress?.HasProgress == true;
+			bool progressHasProgress = progress?.HasProgress == true;
+			if (!progressHasProgress)
+				_logger.LogError("Invalid position while set task progress for user {userId}", userId);
+
+			return progressHasProgress;
 		}
 
 		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, EducationStructureUnit unit)
