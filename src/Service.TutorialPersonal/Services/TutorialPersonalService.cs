@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
@@ -21,7 +20,7 @@ namespace Service.TutorialPersonal.Services
 
 			foreach ((_, EducationStructureUnit unit) in Tutorial.Units)
 			{
-				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, unit);
+				PersonalStateUnitGrpcModel unitProgress = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, unit.Unit);
 				if (unitProgress == null)
 					break;
 
@@ -32,37 +31,29 @@ namespace Service.TutorialPersonal.Services
 			{
 				Available = true,
 				Units = units,
-				Duration = units.Sum(model => model.Duration),
 				TotalProgress = new TotalProgressStateGrpcModel
 				{
+					HabitValue = 1,
 					HabitProgress = 20,
-					HabitName = "The habit of forming savings",
+					SkillValue = 1,
 					SkillProgress = 15,
-					SkillName = "Skill SMART goals",
 					Achievements = new[] {"Starter"}
 				}
 			};
 		}
 
-		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
+		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request) => new FinishUnitGrpcResponse
 		{
-			var result = new FinishUnitGrpcResponse();
-			if (!Tutorial.Units.TryGetValue(request.Unit, out EducationStructureUnit unit))
-				return result;
-
-			result.Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, unit);
-
-			result.TotalProgress = new TotalProgressStateGrpcModel
+			Unit = await _tutorialHelperService.GetUnitProgressAsync(request.UserId, request.Unit),
+			TotalProgress = new TotalProgressStateGrpcModel
 			{
+				HabitValue = 1,
 				HabitProgress = 20,
-				HabitName = "The habit of forming savings",
+				SkillValue = 1,
 				SkillProgress = 15,
-				SkillName = "Skill SMART goals",
 				Achievements = new[] {"Starter", "Viola", "Ignition"}
-			};
-
-			return result;
-		}
+			}
+		};
 
 		#region Unit1 tasks
 
@@ -75,18 +66,18 @@ namespace Service.TutorialPersonal.Services
 		{
 			PersonalTaskTestAnswerGrpcModel[] answers = request.Answers;
 
-			float progress = CheckAnswer(20f, answers, 1, 1, 3)
-				+ CheckAnswer(20f, answers, 2, 1, 3)
-				+ CheckAnswer(20f, answers, 3, 3)
-				+ CheckAnswer(20f, answers, 4, 1, 2, 3)
-				+ CheckAnswer(20f, answers, 5, 1, 3);
+			int progress = CheckAnswer(20, answers, 1, 1, 3)
+				+ CheckAnswer(20, answers, 2, 1, 3)
+				+ CheckAnswer(20, answers, 3, 3)
+				+ CheckAnswer(20, answers, 4, 1, 2, 3)
+				+ CheckAnswer(20, answers, 5, 1, 3);
 
 			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[2], request.IsRetry, request.Duration, progress);
 		}
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request)
 		{
-			float progress = request.Value == 1
+			int progress = request.Value == 1
 				? MaxAnswerProgress
 				: MinAnswerProgress;
 
@@ -97,11 +88,11 @@ namespace Service.TutorialPersonal.Services
 		{
 			PersonalTaskTrueFalseAnswerGrpcModel[] answers = request.Answers;
 
-			float progress = CheckAnswer(20f, answers, 1, true)
-				+ CheckAnswer(20f, answers, 2, true)
-				+ CheckAnswer(20f, answers, 3, true)
-				+ CheckAnswer(20f, answers, 4, false)
-				+ CheckAnswer(20f, answers, 5, true);
+			int progress = CheckAnswer(20, answers, 1, true)
+				+ CheckAnswer(20, answers, 2, true)
+				+ CheckAnswer(20, answers, 3, true)
+				+ CheckAnswer(20, answers, 4, false)
+				+ CheckAnswer(20, answers, 5, true);
 
 			return await _tutorialHelperService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[4], request.IsRetry, request.Duration, progress);
 		}

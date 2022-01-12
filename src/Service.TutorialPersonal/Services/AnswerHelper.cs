@@ -12,21 +12,21 @@ namespace Service.TutorialPersonal.Services
 		public const int MaxAnswerProgress = 100;
 		public const int MinAnswerProgress = 0;
 
-		public static float CheckAnswer(float progress, PersonalTaskTestAnswerGrpcModel[] answers, int questionNumber, params int[] answerNumbers)
+		public static int CheckAnswer(int progressPrc, PersonalTaskTestAnswerGrpcModel[] answers, int questionNumber, params int[] answerNumbers)
 		{
 			PersonalTaskTestAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
 
 			return answer != null && answerNumbers.Intersect(answer.Value).Count() == answerNumbers.Length
-				? progress
+				? progressPrc
 				: MinAnswerProgress;
 		}
 
-		public static float CheckAnswer(float progress, PersonalTaskTrueFalseAnswerGrpcModel[] answers, int questionNumber, bool answerValue)
+		public static int CheckAnswer(int progressPrc, PersonalTaskTrueFalseAnswerGrpcModel[] answers, int questionNumber, bool answerValue)
 		{
 			PersonalTaskTrueFalseAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
 
 			return answer != null && answer.Value == answerValue
-				? progress
+				? progressPrc
 				: MinAnswerProgress;
 		}
 	}

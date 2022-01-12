@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Service.Core.Domain.Extensions;
 using Service.Core.Domain.Models;
 using Service.Core.Domain.Models.Education;
 using Service.Core.Grpc.Models;
@@ -29,7 +28,7 @@ namespace Service.TutorialPersonal.Services
 			_logger = logger;
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, float? progress = null)
+		public async ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, int? progress = null)
 		{
 			if (userId == null
 				|| !await ValidatePostition(userId, unit, task)
@@ -53,11 +52,11 @@ namespace Service.TutorialPersonal.Services
 			return new TestScoreGrpcResponse
 			{
 				IsSuccess = response.IsSuccess,
-				Unit = await GetUnitProgressAsync(userId, unit)
+				Unit = await GetUnitProgressAsync(userId, unit.Unit)
 			};
 		}
 
-		private async Task<bool> ValidateProgress(Guid? userId, EducationStructureUnit unit, bool isRetry, int taskId)
+		private async ValueTask<bool> ValidateProgress(Guid? userId, EducationStructureUnit unit, bool isRetry, int taskId)
 		{
 			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit.Unit, taskId);
 
@@ -98,49 +97,43 @@ namespace Service.TutorialPersonal.Services
 			return progressHasProgress;
 		}
 
-		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, EducationStructureUnit unit)
+		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, int unit)
 		{
-			if (userId == null)
-				return null;
-
-			int unitId = unit.Unit;
-
 			EducationProgressGrpcResponse unitProgressResponse = await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
 			{
 				Tutorial = EducationTutorial.PersonalFinance,
-				Unit = unitId,
+				Unit = unit,
 				UserId = userId
 			});
 
-			int unitProgress = (unitProgressResponse?.Progress.Value).GetValueOrDefault();
+			int unitProgress = (unitProgressResponse?.Value).GetValueOrDefault();
 			if (unitProgress == 0)
 				return null;
 
 			var tasks = new List<PersonalStateTaskGrpcModel>();
+			EducationStructureUnit structureUnit = EducationHelper.GetUnit(EducationTutorial.PersonalFinance, unit);
 
-			foreach ((_, EducationStructureTask task) in unit.Tasks)
+			foreach ((_, EducationStructureTask structureTask) in structureUnit.Tasks)
 			{
-				int taskId = task.Task;
+				int task = structureTask.Task;
 
-				TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unitId, taskId);
+				TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit, task);
 				if (!(taskProgress is { HasProgress: true }))
 					break;
 
 				tasks.Add(new PersonalStateTaskGrpcModel
 				{
-					TaskId = taskId,
+					Task = task,
 					TestScore = taskProgress.Value,
-					Duration = taskProgress.Duration,
 					CanRetry = CanRetryByTime(taskProgress) || await HasRetryCountAsync(userId)
 				});
 			}
 
 			return new PersonalStateUnitGrpcModel
 			{
-				Index = unitId,
+				Unit = unit,
 				TestScore = unitProgress,
-				Tasks = tasks,
-				Duration = tasks.Sum(model => model.Duration)
+				Tasks = tasks
 			};
 		}
 
@@ -155,6 +148,16 @@ namespace Service.TutorialPersonal.Services
 			});
 
 			return taskProgressResponse?.Progress;
+		}
+
+		public async ValueTask<bool> HasRetryCountAsync(Guid? userId)
+		{
+			RetryCountGrpcResponse retryResponse = await _retryService.GetRetryCountAsync(new GetRetryCountGrpcRequest
+			{
+				UserId = userId
+			});
+
+			return retryResponse?.Count > 0;
 		}
 
 		public async ValueTask<bool> GetRetryResultAsync(TaskEducationProgressGrpcModel taskProgress, Guid? userId, EducationStructureUnit unit)
@@ -177,16 +180,11 @@ namespace Service.TutorialPersonal.Services
 			return !retryDecreaseResponse.IsSuccess;
 		}
 
-		public async ValueTask<bool> HasRetryCountAsync(Guid? userId)
+		private bool CanRetryByTime(TaskEducationProgressGrpcModel progressGrpcModel)
 		{
-			RetryCountGrpcResponse retryResponse = await _retryService.GetRetryCountAsync(new GetRetryCountGrpcRequest
-			{
-				UserId = userId
-			});
+			DateTime? whenFinished = progressGrpcModel.Date;
 
-			return retryResponse?.Count > 0;
+			return whenFinished != null && _systemClock.Now.Subtract(whenFinished.Value).TotalDays >= 1;
 		}
-
-		public bool CanRetryByTime(TaskEducationProgressGrpcModel progressGrpcModel) => _systemClock.Now.Subtract(progressGrpcModel.WhenFinished).TotalDays >= 1;
 	}
 }

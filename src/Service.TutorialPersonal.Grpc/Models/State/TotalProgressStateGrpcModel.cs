@@ -9,13 +9,13 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public int HabitProgress { get; set; }
 
 		[DataMember(Order = 2)]
-		public string HabitName { get; set; }
+		public int HabitValue { get; set; }
 
 		[DataMember(Order = 3)]
 		public int SkillProgress { get; set; }
 
 		[DataMember(Order = 4)]
-		public string SkillName { get; set; }
+		public int SkillValue { get; set; }
 
 		[DataMember(Order = 5)]
 		public string[] Achievements { get; set; }

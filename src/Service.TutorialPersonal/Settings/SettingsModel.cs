@@ -22,8 +22,5 @@ namespace Service.TutorialPersonal.Settings
 
 		[YamlProperty("TutorialPersonal.EducationRetryServiceUrl")]
 		public string EducationRetryServiceUrl { get; set; }
-
-		[YamlProperty("TutorialPersonal.UserKnowledgeServiceUrl")]
-		public string UserKnowledgeServiceUrl { get; set; }
 	}
 }
