@@ -11,12 +11,9 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public bool Available { get; set; }
 
 		[DataMember(Order = 2)]
-		public TimeSpan Duration { get; set; }
-
-		[DataMember(Order = 3)]
 		public IList<PersonalStateUnitGrpcModel> Units { get; set; }
 
-		[DataMember(Order = 4)]
+		[DataMember(Order = 3)]
 		public TotalProgressStateGrpcModel TotalProgress { get; set; }
 	}
 }
