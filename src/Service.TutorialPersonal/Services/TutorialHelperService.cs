@@ -128,11 +128,13 @@ namespace Service.TutorialPersonal.Services
 				if (!(taskProgress is { HasProgress: true }))
 					break;
 
+				int progressValue = taskProgress.Value;
+
 				tasks.Add(new PersonalStateTaskGrpcModel
 				{
 					Task = task,
-					TestScore = taskProgress.Value,
-					CanRetry = CanRetryByTime(taskProgress) || await HasRetryCountAsync(userId)
+					TestScore = progressValue,
+					CanRetry = progressValue != 100 && (CanRetryByTime(taskProgress) || await HasRetryCountAsync(userId))
 				});
 			}
 
