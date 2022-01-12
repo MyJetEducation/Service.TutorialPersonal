@@ -56,20 +56,27 @@ namespace Service.TutorialPersonal.Services
 			};
 		}
 
-		private async ValueTask<bool> ValidateProgress(Guid? userId, EducationStructureUnit unit, bool isRetry, int taskId)
+		private async ValueTask<bool> ValidateProgress(Guid? userId, EducationStructureUnit unit, bool isRetry, int task)
 		{
-			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit.Unit, taskId);
+			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit.Unit, task);
 
-			switch (isRetry)
-			{
-				case true when taskProgress is { HasProgress: false } //retry without normal answered task
-					|| taskProgress is { HasProgress: true, Value: AnswerHelper.MaxAnswerProgress } //retry 100% score task
-					|| !await GetRetryResultAsync(taskProgress, userId, unit): //retry denied
-				case false when taskProgress is { HasProgress: true }: //re-answer task at not-retry mode
-					return false;
-				default:
-					return true;
-			}
+			//retry without normal answered task
+			if (isRetry && taskProgress is { HasProgress: false })
+				return false;
+
+			//retry 100% score task
+			if (isRetry && taskProgress is { HasProgress: true, Value: AnswerHelper.MaxAnswerProgress })
+				return false;
+
+			//can't retry (by date or has no retry-count)
+			if (isRetry && !await GetRetryResultAsync(taskProgress, userId, unit))
+				return false;
+
+			//answer already answered task
+			if (!isRetry && taskProgress is { HasProgress: true })
+				return false;
+
+			return true;
 		}
 
 		private async ValueTask<bool> ValidatePostition(Guid? userId, EducationStructureUnit unit, EducationStructureTask task)
