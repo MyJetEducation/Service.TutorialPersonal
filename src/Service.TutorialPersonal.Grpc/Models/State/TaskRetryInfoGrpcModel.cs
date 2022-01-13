@@ -3,15 +3,15 @@
 namespace Service.TutorialPersonal.Grpc.Models.State
 {
 	[DataContract]
-	public class PersonalStateUnitGrpcModel
+	public class TaskRetryInfoGrpcModel
 	{
 		[DataMember(Order = 1)]
-		public int Unit { get; set; }
+		public bool InRetry { get; set; }
 
 		[DataMember(Order = 2)]
-		public int TestScore { get; set; }
+		public bool CanRetryByTime { get; set; }
 
 		[DataMember(Order = 3)]
-		public PersonalStateTaskGrpcModel[] Tasks { get; set; }
+		public bool CanRetryByCount { get; set; }
 	}
 }

@@ -12,6 +12,6 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public int TestScore { get; set; }
 
 		[DataMember(Order = 3)]
-		public bool CanRetry { get; set; }
+		public TaskRetryInfoGrpcModel RetryInfo { get; set; }
 	}
 }
