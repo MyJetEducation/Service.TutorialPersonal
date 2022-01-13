@@ -36,7 +36,7 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<bool> CanRetryByTimeAsync(Guid? userId, TaskEducationProgressGrpcModel progressGrpcModel)
 		{
 			DateTime? preogressDate = progressGrpcModel.Date;
-			if (preogressDate == null || OneDayGone(preogressDate.Value))
+			if (preogressDate == null || !OneDayGone(preogressDate.Value))
 				return false;
 
 			RetryLastDateGrpcResponse response = await _retryService.GetRetryLastDateAsync(new GetRetryLastDateGrpcRequest
