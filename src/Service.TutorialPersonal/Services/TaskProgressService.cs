@@ -74,7 +74,7 @@ namespace Service.TutorialPersonal.Services
 				return false;
 
 			//can't retry (by date or has no retry-count)
-			if (isRetry && await _retryTaskService.TaskInRetryStateAsync(userId, unit, task))
+			if (isRetry && !await _retryTaskService.TaskInRetryStateAsync(userId, unit, task))
 				return false;
 
 			//answer already answered task
