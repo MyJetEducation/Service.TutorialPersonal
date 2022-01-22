@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="MyJetEducation.Service.EducationPosition.Client" Version="1.0.0" />
-    <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.6" />
+    <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.7" />
     <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.1" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.6" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
