@@ -42,7 +42,8 @@ namespace Service.TutorialPersonal.Services
 				Unit = unitId,
 				Task = taskId,
 				Value = progress ?? AnswerHelper.MaxAnswerProgress,
-				Duration = duration
+				Duration = duration,
+				IsRetry = isRetry
 			});
 
 			_logger.LogDebug("Result: {response}...", response.IsSuccess);
