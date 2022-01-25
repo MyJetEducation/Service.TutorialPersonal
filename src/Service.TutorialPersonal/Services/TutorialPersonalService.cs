@@ -1,9 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Service.Core.Domain.Models.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.UserProgress.Grpc;
+using Service.UserProgress.Grpc.Models;
+using Service.UserReward.Grpc;
+using Service.UserReward.Grpc.Models;
 using static Service.TutorialPersonal.Services.AnswerHelper;
 
 namespace Service.TutorialPersonal.Services
@@ -11,49 +16,68 @@ namespace Service.TutorialPersonal.Services
 	public class TutorialPersonalService : ITutorialPersonalService
 	{
 		private readonly ITaskProgressService _taskProgressService;
+		private readonly IUserRewardService _userRewardService;
+		private readonly IUserProgressService _userProgressService;
 
-		public TutorialPersonalService(ITaskProgressService taskProgressService) => _taskProgressService = taskProgressService;
+		public TutorialPersonalService(ITaskProgressService taskProgressService, IUserRewardService userRewardService, IUserProgressService userProgressService)
+		{
+			_taskProgressService = taskProgressService;
+			_userRewardService = userRewardService;
+			_userProgressService = userProgressService;
+		}
 
 		public async ValueTask<PersonalStateGrpcResponse> GetDashboardStateAsync(PersonalSelectTaskUnitGrpcRequest request)
 		{
 			var units = new List<PersonalStateUnitGrpcModel>();
+			Guid? userId = request.UserId;
 
 			foreach ((_, EducationStructureUnit unit) in Tutorial.Units)
 			{
-				PersonalStateUnitGrpcModel unitProgress = await _taskProgressService.GetUnitProgressAsync(request.UserId, unit.Unit);
+				PersonalStateUnitGrpcModel unitProgress = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
 				if (unitProgress == null)
 					break;
 
 				units.Add(unitProgress);
 			}
 
+			UserAchievementsGrpcResponse achievements = await _userRewardService.GetUserAchievementsAsync(new GetUserAchievementsGrpcRequset {UserId = userId});
+
 			return new PersonalStateGrpcResponse
 			{
 				Available = true,
 				Units = units,
-				TotalProgress = new TotalProgressStateGrpcModel
-				{
-					HabitValue = 1,
-					HabitProgress = 20,
-					SkillValue = 1,
-					SkillProgress = 15,
-					Achievements = new[] {"Starter"}
-				}
+				TotalProgress = await GetTotalProgressStateGrpcModel(userId, achievements)
 			};
 		}
 
-		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request) => new FinishUnitGrpcResponse
+		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
 		{
-			Unit = await _taskProgressService.GetUnitProgressAsync(request.UserId, request.Unit),
-			TotalProgress = new TotalProgressStateGrpcModel
+			Guid? userId = request.UserId;
+
+			UserAchievementsGrpcResponse newAchievements = await _userRewardService.GetUserNewUnitAchievementsAsync(new GetUserAchievementsGrpcRequset {UserId = userId});
+			PersonalStateUnitGrpcModel unitProgress = await _taskProgressService.GetUnitProgressAsync(userId, request.Unit);
+
+			return new FinishUnitGrpcResponse
 			{
-				HabitValue = 1,
-				HabitProgress = 20,
-				SkillValue = 1,
-				SkillProgress = 15,
-				Achievements = new[] {"Starter", "Viola", "Ignition"}
-			}
-		};
+				Unit = unitProgress,
+				TotalProgress = await GetTotalProgressStateGrpcModel(userId, newAchievements)
+			};
+		}
+
+		private async ValueTask<TotalProgressStateGrpcModel> GetTotalProgressStateGrpcModel(Guid? userId, UserAchievementsGrpcResponse achievementsGrpcResponse)
+		{
+			ProgressGrpcResponse habitProgress = await _userProgressService.GetHabitProgressAsync(new GetProgressGrpcRequset {UserId = userId});
+			ProgressGrpcResponse skillProgress = await _userProgressService.GetSkillProgressAsync(new GetProgressGrpcRequset {UserId = userId});
+
+			return new TotalProgressStateGrpcModel
+			{
+				HabitValue = habitProgress.Index,
+				HabitProgress = habitProgress.Progress,
+				SkillValue = skillProgress.Index,
+				SkillProgress = skillProgress.Progress,
+				Achievements = achievementsGrpcResponse.Items
+			};
+		}
 
 		#region Unit1 tasks
 

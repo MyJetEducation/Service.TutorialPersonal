@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Service.Core.Domain.Models.Constants;
 
 namespace Service.TutorialPersonal.Grpc.Models.State
 {
@@ -18,6 +19,6 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public int SkillValue { get; set; }
 
 		[DataMember(Order = 5)]
-		public string[] Achievements { get; set; }
+		public UserAchievement[] Achievements { get; set; }
 	}
 }

@@ -10,7 +10,9 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
     <PackageReference Include="MyJetEducation.Service.EducationPosition.Client" Version="1.0.0" />
     <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.9" />
-    <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.1" />
+    <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.2" />
+    <PackageReference Include="MyJetEducation.Service.UserProgress.Client" Version="1.0.3" />
+    <PackageReference Include="MyJetEducation.Service.UserReward.Client" Version="1.0.0" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.6" />
     <PackageReference Include="protobuf-net.Grpc.AspNetCore" Version="1.0.152" />
     <PackageReference Include="SimpleTrading.ServiceStatusReporterConnector" Version="1.0.9" />
