@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Service.Core.Domain.Models.Education;
+using Service.Core.Client.Education;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
 

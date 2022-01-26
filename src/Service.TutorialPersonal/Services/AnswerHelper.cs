@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Service.Core.Domain.Models.Education;
+using Service.Core.Client.Education;
 using Service.TutorialPersonal.Grpc.Models;
 
 namespace Service.TutorialPersonal.Services

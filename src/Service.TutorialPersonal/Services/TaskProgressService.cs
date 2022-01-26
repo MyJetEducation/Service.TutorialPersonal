@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Service.Core.Domain.Models.Education;
-using Service.Core.Grpc.Models;
+using Service.Core.Client.Education;
+using Service.Core.Client.Models;
 using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;

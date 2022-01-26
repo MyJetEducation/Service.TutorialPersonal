@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Service.Core.Domain.Models.Education;
+using Service.Core.Client.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;

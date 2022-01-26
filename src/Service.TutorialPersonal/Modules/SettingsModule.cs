@@ -1,5 +1,5 @@
 ﻿using Autofac;
-using Service.Core.Domain;
+using Service.Core.Client.Services;
 using Service.TutorialPersonal.Services;
 
 namespace Service.TutorialPersonal.Modules

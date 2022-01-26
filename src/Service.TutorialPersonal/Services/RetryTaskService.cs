@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Service.Core.Domain.Models;
-using Service.Core.Domain.Models.Education;
-using Service.Core.Grpc.Models;
+using Service.Core.Client.Education;
+using Service.Core.Client.Models;
+using Service.Core.Client.Services;
 using Service.EducationProgress.Grpc.Models;
 using Service.EducationRetry.Grpc;
 using Service.EducationRetry.Grpc.Models;
