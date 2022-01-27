@@ -44,10 +44,8 @@ namespace Service.TutorialPersonal.Services
 				UserId = userId
 			});
 
-			if (response == null)
-				return false;
+			DateTime? date = response?.Date;
 
-			DateTime? date = response.Date;
 			return date == null || OneDayGone(date.Value);
 		}
 
@@ -74,6 +72,6 @@ namespace Service.TutorialPersonal.Services
 			return decreased.IsSuccess;
 		}
 
-		private bool OneDayGone(DateTime date) => _systemClock.Now.Subtract(date).TotalDays >= 1;
+		private bool OneDayGone(DateTime date) => _systemClock.Now.Subtract(date).Days >= 1;
 	}
 }
