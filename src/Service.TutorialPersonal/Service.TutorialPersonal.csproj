@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="7.2.0" />
-    <PackageReference Include="MyJetEducation.Service.EducationPosition.Client" Version="1.0.0" />
     <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.11" />
     <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.3" />
     <PackageReference Include="MyJetEducation.Service.UserProgress.Client" Version="1.0.4" />

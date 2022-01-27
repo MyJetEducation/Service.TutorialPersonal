@@ -14,9 +14,6 @@ namespace Service.TutorialPersonal.Settings
 		[YamlProperty("TutorialPersonal.ElkLogs")]
 		public LogElkSettings ElkLogs { get; set; }
 
-		[YamlProperty("TutorialPersonal.EducationPositionServiceUrl")]
-		public string EducationPositionServiceUrl { get; set; }
-
 		[YamlProperty("TutorialPersonal.EducationProgressServiceUrl")]
 		public string EducationProgressServiceUrl { get; set; }
 
@@ -28,6 +25,5 @@ namespace Service.TutorialPersonal.Settings
 
 		[YamlProperty("TutorialPersonal.UserProgressServiceUrl")]
 		public string UserProgressServiceUrl { get; set; }
-
 	}
 }
