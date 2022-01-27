@@ -7,18 +7,12 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 	public class TotalProgressStateGrpcModel
 	{
 		[DataMember(Order = 1)]
-		public int HabitProgress { get; set; }
+		public ProgressItemInfoGrpcModel Habit { get; set; }
 
 		[DataMember(Order = 2)]
-		public int HabitValue { get; set; }
+		public ProgressItemInfoGrpcModel Skill { get; set; }
 
 		[DataMember(Order = 3)]
-		public int SkillProgress { get; set; }
-
-		[DataMember(Order = 4)]
-		public int SkillValue { get; set; }
-
-		[DataMember(Order = 5)]
 		public UserAchievement[] Achievements { get; set; }
 	}
 }

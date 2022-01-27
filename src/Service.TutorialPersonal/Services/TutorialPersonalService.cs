@@ -5,6 +5,7 @@ using Service.Core.Client.Education;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.TutorialPersonal.Mappers;
 using Service.UserProgress.Grpc;
 using Service.UserProgress.Grpc.Models;
 using Service.UserReward.Grpc;
@@ -68,19 +69,13 @@ namespace Service.TutorialPersonal.Services
 		{
 			UnitedProgressGrpcResponse progress = await _userProgressService.GetUnitedProgressAsync(new GetProgressGrpcRequset
 			{
-				UserId = userId, 
-				Tutorial = EducationTutorial.PersonalFinance
+				UserId = userId
 			});
-
-			ProgressGrpcResponse progressSkill = progress.Skill;
-			ProgressGrpcResponse progressHabit = progress.Habit;
 
 			return new TotalProgressStateGrpcModel
 			{
-				HabitValue = progressHabit.Index,
-				HabitProgress = progressHabit.Progress,
-				SkillValue = progressSkill.Index,
-				SkillProgress = progressSkill.Progress,
+				Habit = progress.Habit.ToGrpcModel(),
+				Skill = progress.Skill.ToGrpcModel(),
 				Achievements = achievementsGrpcResponse.Items
 			};
 		}
