@@ -66,15 +66,21 @@ namespace Service.TutorialPersonal.Services
 
 		private async ValueTask<TotalProgressStateGrpcModel> GetTotalProgressStateGrpcModel(Guid? userId, UserAchievementsGrpcResponse achievementsGrpcResponse)
 		{
-			ProgressGrpcResponse habitProgress = await _userProgressService.GetHabitProgressAsync(new GetProgressGrpcRequset {UserId = userId});
-			ProgressGrpcResponse skillProgress = await _userProgressService.GetSkillProgressAsync(new GetProgressGrpcRequset {UserId = userId});
+			UnitedProgressGrpcResponse progress = await _userProgressService.GetUnitedProgressAsync(new GetProgressGrpcRequset
+			{
+				UserId = userId, 
+				Tutorial = EducationTutorial.PersonalFinance
+			});
+
+			ProgressGrpcResponse progressSkill = progress.Skill;
+			ProgressGrpcResponse progressHabit = progress.Habit;
 
 			return new TotalProgressStateGrpcModel
 			{
-				HabitValue = habitProgress.Index,
-				HabitProgress = habitProgress.Progress,
-				SkillValue = skillProgress.Index,
-				SkillProgress = skillProgress.Progress,
+				HabitValue = progressHabit.Index,
+				HabitProgress = progressHabit.Progress,
+				SkillValue = progressSkill.Index,
+				SkillProgress = progressSkill.Progress,
 				Achievements = achievementsGrpcResponse.Items
 			};
 		}
