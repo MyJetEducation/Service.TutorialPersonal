@@ -7,7 +7,6 @@ namespace Service.TutorialPersonal.Services
 	public static class AnswerHelper
 	{
 		public static readonly EducationStructureTutorial Tutorial = EducationStructure.Tutorials[EducationTutorial.PersonalFinance];
-		public static readonly EducationStructureUnit Unit1 = Tutorial.Units[1];
 
 		public const int MaxAnswerProgress = 100;
 		public const int MinAnswerProgress = 0;
