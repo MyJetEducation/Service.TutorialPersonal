@@ -64,6 +64,9 @@ namespace Service.TutorialPersonal.Services
 
 		private async ValueTask<bool> ValidateProgress(Guid? userId, int unit, int task, bool isRetry)
 		{
+			if (Program.ReloadedSettings(model => model.TestMode).Invoke())
+				return true;
+
 			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit, task);
 
 			//retry without normal answered task
@@ -79,17 +82,17 @@ namespace Service.TutorialPersonal.Services
 				return false;
 
 			//answer already answered task
-			if (!Program.ReloadedSettings(model => model.TestMode).Invoke())
-			{
-				if (!isRetry && taskProgress is { HasProgress: true })
-					return false;
-			}
+			if (!isRetry && taskProgress is { HasProgress: true })
+				return false;
 
 			return true;
 		}
 
 		private async ValueTask<bool> ValidatePostition(Guid? userId, EducationStructureUnit unit, int task)
 		{
+			if (Program.ReloadedSettings(model => model.TestMode).Invoke())
+				return true;
+
 			if (unit.Unit == 1 && task == 1)
 				return true;
 
