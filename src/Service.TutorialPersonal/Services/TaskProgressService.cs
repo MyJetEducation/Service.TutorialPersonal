@@ -79,8 +79,11 @@ namespace Service.TutorialPersonal.Services
 				return false;
 
 			//answer already answered task
-			if (!isRetry && taskProgress is { HasProgress: true })
-				return false;
+			if (!Program.ReloadedSettings(model => model.TestMode).Invoke())
+			{
+				if (!isRetry && taskProgress is { HasProgress: true })
+					return false;
+			}
 
 			return true;
 		}
