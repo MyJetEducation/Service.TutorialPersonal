@@ -28,5 +28,9 @@ namespace Service.TutorialPersonal.Services
 				? progressPrc
 				: MinAnswerProgress;
 		}
+
+		public static int GetSimpleProgress(bool taskPassed) => taskPassed
+			? MaxAnswerProgress
+			: MinAnswerProgress;
 	}
 }

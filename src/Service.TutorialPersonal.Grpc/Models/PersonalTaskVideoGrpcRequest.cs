@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace Service.TutorialPersonal.Grpc.Models
 {
 	[DataContract]
-	public class PersonalTaskGameGrpcRequest
+	public class PersonalTaskVideoGrpcRequest
 	{
 		[DataMember(Order = 1)]
 		public Guid? UserId { get; set; }
@@ -14,8 +14,5 @@ namespace Service.TutorialPersonal.Grpc.Models
 
 		[DataMember(Order = 3)]
 		public TimeSpan Duration { get; set; }
-
-		[DataMember(Order = 4)]
-		public bool Passed { get; set; }
 	}
 }

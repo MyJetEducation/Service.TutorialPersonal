@@ -11,9 +11,7 @@ namespace Service.TutorialPersonal.Services
 		public static readonly EducationStructureUnit Unit5 = Tutorial.Units[5];
 
 		public async ValueTask<TestScoreGrpcResponse> Unit5TextAsync(PersonalTaskTextGrpcRequest request)
-		{
-			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[1], request.IsRetry, request.Duration);
-		}
+			=> await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[1], request.IsRetry, request.Duration);
 
 		public async ValueTask<TestScoreGrpcResponse> Unit5TestAsync(PersonalTaskTestGrpcRequest request)
 		{
@@ -28,14 +26,11 @@ namespace Service.TutorialPersonal.Services
 			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[2], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit5CaseAsync(PersonalTaskCaseGrpcRequest request)
-		{
-			int progress = request.Value == 1
-				? MaxAnswerProgress
-				: MinAnswerProgress;
+		public async ValueTask<TestScoreGrpcResponse> Unit5VideoAsync(PersonalTaskVideoGrpcRequest request) => 
+			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[3], request.IsRetry, request.Duration);
 
-			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[3], request.IsRetry, request.Duration, progress);
-		}
+		public async ValueTask<TestScoreGrpcResponse> Unit5CaseAsync(PersonalTaskCaseGrpcRequest request) => 
+			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[4], request.IsRetry, request.Duration, GetSimpleProgress(request.Value == 1));
 
 		public async ValueTask<TestScoreGrpcResponse> Unit5TrueFalseAsync(PersonalTaskTrueFalseGrpcRequest request)
 		{
@@ -47,12 +42,10 @@ namespace Service.TutorialPersonal.Services
 				+ CheckAnswer(20, answers, 4, true)
 				+ CheckAnswer(20, answers, 5, true);
 
-			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[4], request.IsRetry, request.Duration, progress);
+			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[5], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit5GameAsync(PersonalTaskGameGrpcRequest request)
-		{
-			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[5], request.IsRetry, request.Duration);
-		}
+		public async ValueTask<TestScoreGrpcResponse> Unit5GameAsync(PersonalTaskGameGrpcRequest request) => 
+			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit5, Unit5.Tasks[6], request.IsRetry, request.Duration, GetSimpleProgress(request.Passed));
 	}
 }
