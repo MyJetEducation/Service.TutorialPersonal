@@ -23,6 +23,9 @@ namespace Service.TutorialPersonal.Grpc
 		ValueTask<TestScoreGrpcResponse> Unit1TestAsync(PersonalTaskTestGrpcRequest request);
 
 		[OperationContract]
+		ValueTask<TestScoreGrpcResponse> Unit1VideoAsync(PersonalTaskVideoGrpcRequest request);
+
+		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request);
 
 		[OperationContract]
@@ -40,6 +43,9 @@ namespace Service.TutorialPersonal.Grpc
 
 		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit2TestAsync(PersonalTaskTestGrpcRequest request);
+
+		[OperationContract]
+		ValueTask<TestScoreGrpcResponse> Unit2VideoAsync(PersonalTaskVideoGrpcRequest request);
 
 		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit2CaseAsync(PersonalTaskCaseGrpcRequest request);
@@ -61,6 +67,9 @@ namespace Service.TutorialPersonal.Grpc
 		ValueTask<TestScoreGrpcResponse> Unit3TestAsync(PersonalTaskTestGrpcRequest request);
 
 		[OperationContract]
+		ValueTask<TestScoreGrpcResponse> Unit3VideoAsync(PersonalTaskVideoGrpcRequest request);
+
+		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit3CaseAsync(PersonalTaskCaseGrpcRequest request);
 
 		[OperationContract]
@@ -80,6 +89,9 @@ namespace Service.TutorialPersonal.Grpc
 		ValueTask<TestScoreGrpcResponse> Unit4TestAsync(PersonalTaskTestGrpcRequest request);
 
 		[OperationContract]
+		ValueTask<TestScoreGrpcResponse> Unit4VideoAsync(PersonalTaskVideoGrpcRequest request);
+
+		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit4CaseAsync(PersonalTaskCaseGrpcRequest request);
 
 		[OperationContract]
@@ -97,6 +109,9 @@ namespace Service.TutorialPersonal.Grpc
 
 		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit5TestAsync(PersonalTaskTestGrpcRequest request);
+
+		[OperationContract]
+		ValueTask<TestScoreGrpcResponse> Unit5VideoAsync(PersonalTaskVideoGrpcRequest request);
 
 		[OperationContract]
 		ValueTask<TestScoreGrpcResponse> Unit5CaseAsync(PersonalTaskCaseGrpcRequest request);
