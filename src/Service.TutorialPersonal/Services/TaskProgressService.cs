@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Service.Core.Client.Education;
@@ -7,6 +8,7 @@ using Service.Core.Client.Models;
 using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.TutorialPersonal.Models;
 
 namespace Service.TutorialPersonal.Services
 {
@@ -55,10 +57,12 @@ namespace Service.TutorialPersonal.Services
 					_logger.LogError("Error while clearing retry state for user {user}, unit: {unit}, task: {task}.", userId, unitId, taskId);
 			}
 
+			UnitInfoModel unitInfo = await GetUnitProgressAsync(userId, unitId);
+
 			return new TestScoreGrpcResponse
 			{
 				IsSuccess = response.IsSuccess,
-				Unit = await GetUnitProgressAsync(userId, unitId)
+				Unit = unitInfo.PersonalStateUnit
 			};
 		}
 
@@ -116,7 +120,7 @@ namespace Service.TutorialPersonal.Services
 			return progressHasProgress;
 		}
 
-		public async ValueTask<PersonalStateUnitGrpcModel> GetUnitProgressAsync(Guid? userId, int unit)
+		public async ValueTask<UnitInfoModel> GetUnitProgressAsync(Guid? userId, int unit)
 		{
 			EducationProgressGrpcResponse unitProgressResponse = await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
 			{
@@ -131,8 +135,12 @@ namespace Service.TutorialPersonal.Services
 
 			var tasks = new List<PersonalStateTaskGrpcModel>();
 			EducationStructureUnit structureUnit = EducationHelper.GetUnit(EducationTutorial.PersonalFinance, unit);
+			IDictionary<int, EducationStructureTask> unitTasks = structureUnit.Tasks;
 
-			foreach ((_, EducationStructureTask structureTask) in structureUnit.Tasks)
+			var trueFalseProgress = new List<int>();
+			var caseProgress = new List<int>();
+
+			foreach ((_, EducationStructureTask structureTask) in unitTasks)
 			{
 				int taskId = structureTask.Task;
 
@@ -144,6 +152,16 @@ namespace Service.TutorialPersonal.Services
 				bool lowProgress = progressValue < 100;
 				bool inRetryState = await _retryTaskService.TaskInRetryStateAsync(userId, unit, taskId);
 				bool canRetryTask = !inRetryState && lowProgress;
+
+				switch (structureTask.TaskType)
+				{
+					case EducationTaskType.TrueFalse:
+						trueFalseProgress.Add(progressValue);
+						break;
+					case EducationTaskType.Case:
+						caseProgress.Add(progressValue);
+						break;
+				}
 
 				tasks.Add(new PersonalStateTaskGrpcModel
 				{
@@ -158,12 +176,24 @@ namespace Service.TutorialPersonal.Services
 				});
 			}
 
-			return new PersonalStateUnitGrpcModel
+			return new UnitInfoModel
 			{
-				Unit = unit,
-				TestScore = unitProgress,
-				Tasks = tasks.ToArray()
+				PersonalStateUnit = new PersonalStateUnitGrpcModel
+				{
+					Unit = unit,
+					TestScore = unitProgress,
+					Tasks = tasks.ToArray()
+				},
+				TrueFalseProgress = GetProgressByTaskType(EducationTaskType.TrueFalse, unitTasks, trueFalseProgress),
+				CaseProgress = GetProgressByTaskType(EducationTaskType.Case, unitTasks, caseProgress)
 			};
+		}
+
+		private static int GetProgressByTaskType(EducationTaskType taskType, IDictionary<int, EducationStructureTask> unitTasks, IEnumerable<int> progressList)
+		{
+			int allTasksCount = unitTasks.Count(pair => pair.Value.TaskType == taskType);
+
+			return progressList.Sum() / allTasksCount;
 		}
 
 		public async ValueTask<TaskEducationProgressGrpcModel> GetTaskProgressAsync(Guid? userId, int unit, int task)

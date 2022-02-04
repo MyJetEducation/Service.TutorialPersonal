@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using Service.Core.Client.Constants;
 
 namespace Service.TutorialPersonal.Grpc.Models.State
 {
@@ -9,6 +10,12 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public PersonalStateUnitGrpcModel Unit { get; set; }
 
 		[DataMember(Order = 2)]
-		public TotalProgressStateGrpcModel TotalProgress { get; set; }
+		public int TrueFalseProgress { get; set; }
+
+		[DataMember(Order = 3)]
+		public int CaseProgress { get; set; }
+
+		[DataMember(Order = 4)]
+		public UserAchievement[] NewAchievements { get; set; }
 	}
 }

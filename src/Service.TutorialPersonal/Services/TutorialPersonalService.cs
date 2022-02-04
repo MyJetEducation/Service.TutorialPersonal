@@ -6,6 +6,7 @@ using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
 using Service.TutorialPersonal.Mappers;
+using Service.TutorialPersonal.Models;
 using Service.UserProgress.Grpc;
 using Service.UserProgress.Grpc.Models;
 using Service.UserReward.Grpc;
@@ -34,50 +35,48 @@ namespace Service.TutorialPersonal.Services
 
 			foreach ((_, EducationStructureUnit unit) in Tutorial.Units)
 			{
-				PersonalStateUnitGrpcModel unitProgress = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
-				if (unitProgress == null)
+				UnitInfoModel unitInfo = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
+				if (unitInfo == null)
 					break;
 
-				units.Add(unitProgress);
+				units.Add(unitInfo.PersonalStateUnit);
 			}
 
 			UserAchievementsGrpcResponse achievements = await _userRewardService.GetUserAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
+			UnitedProgressGrpcResponse progress = await _userProgressService.GetUnitedProgressAsync(new GetProgressGrpcRequset {UserId = userId});
 
 			return new PersonalStateGrpcResponse
 			{
 				Available = true,
 				Units = units,
-				TotalProgress = await GetTotalProgressStateGrpcModel(userId, achievements)
+				TotalProgress = new TotalProgressStateGrpcModel
+				{
+					Habit = progress.Habit.ToGrpcModel(),
+					Skill = progress.Skill.ToGrpcModel(),
+					Achievements = achievements.Items
+				}
 			};
 		}
 
 		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
 		{
 			Guid? userId = request.UserId;
+			userId = new Guid("4d919213-b7a5-402c-888a-fad794342d0a");
+			var result = new FinishUnitGrpcResponse();
 
 			UserAchievementsGrpcResponse newAchievements = await _userRewardService.GetUserNewUnitAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
-			PersonalStateUnitGrpcModel unitProgress = await _taskProgressService.GetUnitProgressAsync(userId, request.Unit);
+			if (newAchievements != null)
+				result.NewAchievements = newAchievements.Items;
 
-			return new FinishUnitGrpcResponse
-			{
-				Unit = unitProgress,
-				TotalProgress = await GetTotalProgressStateGrpcModel(userId, newAchievements)
-			};
-		}
+			UnitInfoModel unitInfo = await _taskProgressService.GetUnitProgressAsync(userId, request.Unit);
+			if (unitInfo == null)
+				return result;
 
-		private async ValueTask<TotalProgressStateGrpcModel> GetTotalProgressStateGrpcModel(Guid? userId, UserAchievementsGrpcResponse achievementsGrpcResponse)
-		{
-			UnitedProgressGrpcResponse progress = await _userProgressService.GetUnitedProgressAsync(new GetProgressGrpcRequset
-			{
-				UserId = userId
-			});
+			result.Unit = unitInfo.PersonalStateUnit;
+			result.TrueFalseProgress = unitInfo.TrueFalseProgress;
+			result.CaseProgress = unitInfo.CaseProgress;
 
-			return new TotalProgressStateGrpcModel
-			{
-				Habit = progress.Habit.ToGrpcModel(),
-				Skill = progress.Skill.ToGrpcModel(),
-				Achievements = achievementsGrpcResponse.Items
-			};
+			return result;
 		}
 	}
 }
