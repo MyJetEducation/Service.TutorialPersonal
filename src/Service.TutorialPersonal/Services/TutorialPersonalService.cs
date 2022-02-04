@@ -61,7 +61,6 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
 		{
 			Guid? userId = request.UserId;
-			userId = new Guid("4d919213-b7a5-402c-888a-fad794342d0a");
 			var result = new FinishUnitGrpcResponse();
 
 			UserAchievementsGrpcResponse newAchievements = await _userRewardService.GetUserNewUnitAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
