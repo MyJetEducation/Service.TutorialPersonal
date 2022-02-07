@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Service.Core.Client.Constants;
 using Service.Core.Client.Education;
 using Service.Core.Client.Models;
 using Service.EducationProgress.Grpc;
@@ -43,7 +44,7 @@ namespace Service.TutorialPersonal.Services
 				Tutorial = EducationTutorial.PersonalFinance,
 				Unit = unitId,
 				Task = taskId,
-				Value = progress ?? AnswerHelper.MaxAnswerProgress,
+				Value = progress ?? AnswerProgress.MaxAnswerProgress,
 				Duration = duration,
 				IsRetry = isRetry
 			});
@@ -78,7 +79,7 @@ namespace Service.TutorialPersonal.Services
 				return false;
 
 			//retry 100% score task
-			if (isRetry && taskProgress is { HasProgress: true, Value: AnswerHelper.MaxAnswerProgress })
+			if (isRetry && taskProgress is { HasProgress: true, Value: AnswerProgress.MaxAnswerProgress })
 				return false;
 
 			//can't retry (by date or has no retry-count)
@@ -130,7 +131,7 @@ namespace Service.TutorialPersonal.Services
 			});
 
 			int unitProgress = (unitProgressResponse?.Value).GetValueOrDefault();
-			if (unitProgress == 0)
+			if (unitProgress == AnswerProgress.MinAnswerProgress)
 				return null;
 
 			var tasks = new List<PersonalStateTaskGrpcModel>();
@@ -149,7 +150,7 @@ namespace Service.TutorialPersonal.Services
 					break;
 
 				int progressValue = taskProgress.Value;
-				bool lowProgress = progressValue < 100;
+				bool lowProgress = progressValue < AnswerProgress.MaxAnswerProgress;
 				bool inRetryState = await _retryTaskService.TaskInRetryStateAsync(userId, unit, taskId);
 				bool canRetryTask = !inRetryState && lowProgress;
 
