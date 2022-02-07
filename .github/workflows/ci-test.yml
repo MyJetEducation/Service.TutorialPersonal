@@ -43,7 +43,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
         path: ./publish-api
-#        registry: docker.pkg.github.com
         registry: ghcr.io
         repository: ${{ secrets.ORG_NAME }}/service.tutorialpersonal/service.tutorialpersonal-test
         tags: latest
@@ -57,27 +56,3 @@ jobs:
         port: ${{ secrets.PORT }}
         key: ${{ secrets.PRIVATE_KEY }}
         script: cd /home/monfex/Services/Service.TutorialPersonal && docker-compose pull && docker-compose up -d
-
-#    - name: Publish image Azure
-#      uses: docker/build-push-action@v1
-#      with:
-#        username: ${{ secrets.AZ_DOCKER_USER }}
-#        password: ${{ secrets.AZ_DOCKER_PASSWORD }}
-#        path: ./publish-api
-#        registry: ${{ secrets.AZ_REGISTRY }}
-#        repository: education/service.educationapi-test
-#        tags: latest
-#        add_git_labels: true
-#        build_args: app_version=service.educationapi-test:latest,app_compilation_date=${{ steps.current-time.outputs.formattedTime }}
-
-  #restart:
-  #  runs-on: self-hosted   
-  #  needs: build
-  #  steps:
-  #  - name: Restart service
-  #    uses: Myjetwallet/kube-restart-pods@master
-  #    env:
-  #      KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA__ST_TEST }}
-  #      NAMESPACE: ${{ secrets.KUBE_TEST_NAMESPACE }}
-  #      POD: educationapi
-
