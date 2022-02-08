@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Service.Core.Client.Education;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
-using Service.TutorialPersonal.Models;
 
 namespace Service.TutorialPersonal.Services
 {
@@ -11,7 +10,7 @@ namespace Service.TutorialPersonal.Services
 	{
 		ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, int? progress = null);
 
-		ValueTask<UnitInfoModel> GetUnitProgressAsync(Guid? userId, int unit);
+		ValueTask<(PersonalStateUnitGrpcModel stateUnitModel, int TrueFalseProgress, int CaseProgress)> GetUnitProgressAsync(Guid? userId, int unit);
 
 		ValueTask<TaskEducationProgressGrpcModel> GetTaskProgressAsync(Guid? userId, int unit, int task);
 	}

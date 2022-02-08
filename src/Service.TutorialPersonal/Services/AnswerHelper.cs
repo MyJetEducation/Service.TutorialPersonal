@@ -13,22 +13,16 @@ namespace Service.TutorialPersonal.Services
 		{
 			PersonalTaskTestAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
 
-			return answer != null && answerNumbers.Intersect(answer.Value).Count() == answerNumbers.Length
-				? progressPrc
-				: AnswerProgress.MinAnswerProgress;
+			return CountProgress(answer != null && answerNumbers.Intersect(answer.Value).Count() == answerNumbers.Length, progressPrc);
 		}
 
 		public static int CheckAnswer(int progressPrc, PersonalTaskTrueFalseAnswerGrpcModel[] answers, int questionNumber, bool answerValue)
 		{
 			PersonalTaskTrueFalseAnswerGrpcModel answer = answers.FirstOrDefault(model => model.Number == questionNumber);
 
-			return answer != null && answer.Value == answerValue
-				? progressPrc
-				: AnswerProgress.MinAnswerProgress;
+			return CountProgress(answer != null && answer.Value == answerValue, progressPrc);
 		}
 
-		public static int GetSimpleProgress(bool taskPassed) => taskPassed
-			? AnswerProgress.MaxAnswerProgress
-			: AnswerProgress.MinAnswerProgress;
+		public static int CountProgress(bool taskPassed, int progress = AnswerProgress.MaxAnswerProgress) => taskPassed ? progress : AnswerProgress.MinAnswerProgress;
 	}
 }

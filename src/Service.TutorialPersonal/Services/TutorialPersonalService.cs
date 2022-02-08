@@ -6,7 +6,6 @@ using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
 using Service.TutorialPersonal.Mappers;
-using Service.TutorialPersonal.Models;
 using Service.UserProgress.Grpc;
 using Service.UserProgress.Grpc.Models;
 using Service.UserReward.Grpc;
@@ -35,11 +34,9 @@ namespace Service.TutorialPersonal.Services
 
 			foreach ((_, EducationStructureUnit unit) in Tutorial.Units)
 			{
-				UnitInfoModel unitInfo = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
-				if (unitInfo == null)
-					break;
+				(PersonalStateUnitGrpcModel stateUnitModel, _, _) = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
 
-				units.Add(unitInfo.PersonalStateUnit);
+				units.Add(stateUnitModel);
 			}
 
 			UserAchievementsGrpcResponse achievements = await _userRewardService.GetUserAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
@@ -61,19 +58,19 @@ namespace Service.TutorialPersonal.Services
 		public async ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request)
 		{
 			Guid? userId = request.UserId;
-			var result = new FinishUnitGrpcResponse();
 
-			UserAchievementsGrpcResponse newAchievements = await _userRewardService.GetUserNewUnitAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
+			(PersonalStateUnitGrpcModel stateUnitModel, int trueFalseProgress, int caseProgress) = await _taskProgressService.GetUnitProgressAsync(userId, request.Unit);
+
+			var result = new FinishUnitGrpcResponse
+			{
+				Unit = stateUnitModel,
+				TrueFalseProgress = trueFalseProgress,
+				CaseProgress = caseProgress
+			};
+
+			UserAchievementsGrpcResponse newAchievements = await _userRewardService.GetUserNewUnitAchievementsAsync(new GetUserAchievementsGrpcRequest { UserId = userId });
 			if (newAchievements != null)
 				result.NewAchievements = newAchievements.Items;
-
-			UnitInfoModel unitInfo = await _taskProgressService.GetUnitProgressAsync(userId, request.Unit);
-			if (unitInfo == null)
-				return result;
-
-			result.Unit = unitInfo.PersonalStateUnit;
-			result.TrueFalseProgress = unitInfo.TrueFalseProgress;
-			result.CaseProgress = unitInfo.CaseProgress;
 
 			return result;
 		}
