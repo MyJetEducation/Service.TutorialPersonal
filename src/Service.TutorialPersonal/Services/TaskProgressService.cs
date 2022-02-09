@@ -133,7 +133,7 @@ namespace Service.TutorialPersonal.Services
 			});
 
 			int unitProgress = (unitProgressResponse?.Value).GetValueOrDefault();
-			if (unitProgress.IsMaxProgress())
+			if (unitProgress.IsMinProgress())
 				return (null, 0, 0);
 
 			var tasks = new List<PersonalStateTaskGrpcModel>();
