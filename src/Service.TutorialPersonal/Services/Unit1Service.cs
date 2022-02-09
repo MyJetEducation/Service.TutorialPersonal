@@ -1,21 +1,22 @@
 ﻿using System.Threading.Tasks;
-using Service.Core.Client.Education;
+using Service.Education;
+using Service.Education.Structure;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
-using static Service.TutorialPersonal.Services.AnswerHelper;
+using static Service.Education.Helpers.AnswerHelper;
 
 namespace Service.TutorialPersonal.Services
 {
 	public partial class TutorialPersonalService
 	{
-		public static readonly EducationStructureUnit Unit1 = Tutorial.Units[1];
+		public static readonly EducationStructureUnit Unit1 = EducationStructure.Tutorials[EducationTutorial.PersonalFinance].Units[1];
 
-		public async ValueTask<TestScoreGrpcResponse> Unit1TextAsync(PersonalTaskTextGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit1TextAsync(PersonalTaskTextGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[1], request.IsRetry, request.Duration);
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TestAsync(PersonalTaskTestGrpcRequest request)
 		{
-			PersonalTaskTestAnswerGrpcModel[] answers = request.Answers;
+			ITaskTestAnswer[] answers = request.Answers;
 
 			int progress = CheckAnswer(20, answers, 1, 1, 3)
 				+ CheckAnswer(20, answers, 2, 1, 3)
@@ -26,15 +27,15 @@ namespace Service.TutorialPersonal.Services
 			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[2], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit1VideoAsync(PersonalTaskVideoGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit1VideoAsync(PersonalTaskVideoGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[3], request.IsRetry, request.Duration);
 
-		public async ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit1CaseAsync(PersonalTaskCaseGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[4], request.IsRetry, request.Duration, CountProgress(request.Value == 1));
 
 		public async ValueTask<TestScoreGrpcResponse> Unit1TrueFalseAsync(PersonalTaskTrueFalseGrpcRequest request)
 		{
-			PersonalTaskTrueFalseAnswerGrpcModel[] answers = request.Answers;
+			ITaskTrueFalseAnswer[] answers = request.Answers;
 
 			int progress = CheckAnswer(20, answers, 1, true)
 				+ CheckAnswer(20, answers, 2, true)
@@ -45,7 +46,7 @@ namespace Service.TutorialPersonal.Services
 			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[5], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit1GameAsync(PersonalTaskGameGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit1GameAsync(PersonalTaskGameGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit1, Unit1.Tasks[6], request.IsRetry, request.Duration);
 	}
 }

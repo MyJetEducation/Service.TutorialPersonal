@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Service.Core.Client.Education;
+using Service.Education.Structure;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
@@ -10,12 +10,13 @@ using Service.UserProgress.Grpc;
 using Service.UserProgress.Grpc.Models;
 using Service.UserReward.Grpc;
 using Service.UserReward.Grpc.Models;
-using static Service.TutorialPersonal.Services.AnswerHelper;
 
 namespace Service.TutorialPersonal.Services
 {
 	public partial class TutorialPersonalService : ITutorialPersonalService
 	{
+		private static readonly EducationStructureTutorial Tutorial = EducationStructure.Tutorials[EducationTutorial.PersonalFinance];
+
 		private readonly ITaskProgressService _taskProgressService;
 		private readonly IUserRewardService _userRewardService;
 		private readonly IUserProgressService _userProgressService;
