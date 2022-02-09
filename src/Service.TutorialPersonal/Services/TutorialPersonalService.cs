@@ -36,7 +36,8 @@ namespace Service.TutorialPersonal.Services
 			{
 				(PersonalStateUnitGrpcModel stateUnitModel, _, _) = await _taskProgressService.GetUnitProgressAsync(userId, unit.Unit);
 
-				units.Add(stateUnitModel);
+				if (stateUnitModel != null)
+					units.Add(stateUnitModel);
 			}
 
 			UserAchievementsGrpcResponse achievements = await _userRewardService.GetUserAchievementsAsync(new GetUserAchievementsGrpcRequest {UserId = userId});
