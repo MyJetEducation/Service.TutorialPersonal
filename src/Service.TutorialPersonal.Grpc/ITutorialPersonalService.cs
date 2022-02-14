@@ -9,10 +9,7 @@ namespace Service.TutorialPersonal.Grpc
 	public interface ITutorialPersonalService
 	{
 		[OperationContract]
-		ValueTask<PersonalStateGrpcResponse> GetDashboardStateAsync(PersonalSelectTaskUnitGrpcRequest request);
-
-		[OperationContract]
-		ValueTask<FinishUnitGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request);
+		ValueTask<FinishStateGrpcResponse> GetFinishStateAsync(GetFinishStateGrpcRequest request);
 
 		#region Unit1
 

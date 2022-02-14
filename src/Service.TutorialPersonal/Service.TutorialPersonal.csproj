@@ -6,16 +6,25 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+
   <ItemGroup>
     <PackageReference Include="Autofac" Version="6.3.0" />
-    <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.15" />
+    <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.16" />
     <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.5" />
     <PackageReference Include="MyJetEducation.Service.UserProgress.Client" Version="1.0.11" />
-    <PackageReference Include="MyJetEducation.Service.UserReward.Client" Version="1.0.5" />
+    <PackageReference Include="MyJetEducation.Service.UserReward.Client" Version="1.0.6" />
     <PackageReference Include="MyJetEducation.Service.Core.Client" Version="1.0.29" />
     <PackageReference Include="MyJetWallet.Sdk.Service" Version="2.1.7" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.9.0" />
-    <PackageReference Include="MyJetEducation.Service.Education" Version="1.0.0" />
+    <PackageReference Include="MyJetEducation.Service.Education" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="Mappers\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

@@ -4,12 +4,12 @@ using System.Runtime.Serialization;
 namespace Service.TutorialPersonal.Grpc.Models
 {
 	[DataContract]
-	public class GetFinishStateGrpcRequest
+	public class GetUnitFinishStateGrpcRequest
 	{
 		[DataMember(Order = 1)]
 		public Guid? UserId { get; set; }
 
 		[DataMember(Order = 2)]
-		public int? Unit { get; set; }
+		public int Unit { get; set; }
 	}
 }

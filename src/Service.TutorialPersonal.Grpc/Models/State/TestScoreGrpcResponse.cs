@@ -9,6 +9,6 @@ namespace Service.TutorialPersonal.Grpc.Models.State
 		public bool IsSuccess { get; set; }
 
 		[DataMember(Order = 2)]
-		public PersonalStateUnitGrpcModel Unit { get; set; }
+		public UnitStateGrpcModel Unit { get; set; }
 	}
 }
