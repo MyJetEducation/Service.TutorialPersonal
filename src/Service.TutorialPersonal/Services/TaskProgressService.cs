@@ -174,7 +174,7 @@ namespace Service.TutorialPersonal.Services
 					{
 						InRetry = inRetryState,
 						CanRetryByCount = canRetryTask && await _retryTaskService.HasRetryCountAsync(userId),
-						CanRetryByTime = canRetryTask && await _retryTaskService.CanRetryByTimeAsync(userId, taskProgress)
+						CanRetryByTime = canRetryTask && await _retryTaskService.CanRetryByTimeAsync(userId, taskProgress.Date)
 					}
 				});
 			}

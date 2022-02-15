@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Service.Core.Client.Models;
 using Service.Core.Client.Services;
 using Service.Education.Structure;
-using Service.EducationProgress.Grpc.Models;
 using Service.EducationRetry.Grpc;
 using Service.EducationRetry.Grpc.Models;
 
@@ -33,10 +32,9 @@ namespace Service.TutorialPersonal.Services
 			return response.InRetry;
 		}
 
-		public async ValueTask<bool> CanRetryByTimeAsync(Guid? userId, TaskEducationProgressGrpcModel progressGrpcModel)
+		public async ValueTask<bool> CanRetryByTimeAsync(Guid? userId, DateTime? progressDate)
 		{
-			DateTime? preogressDate = progressGrpcModel.Date;
-			if (preogressDate == null || !OneDayGone(preogressDate.Value))
+			if (progressDate == null || !OneDayGone(progressDate.Value))
 				return false;
 
 			RetryLastDateGrpcResponse response = await _retryService.GetRetryLastDateAsync(new GetRetryLastDateGrpcRequest
