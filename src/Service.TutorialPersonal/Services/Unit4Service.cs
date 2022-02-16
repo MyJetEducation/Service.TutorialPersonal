@@ -3,13 +3,14 @@ using Service.Education;
 using Service.Education.Structure;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.TutorialPersonal.Helper;
 using static Service.Education.Helpers.AnswerHelper;
 
 namespace Service.TutorialPersonal.Services
 {
 	public partial class TutorialPersonalService
 	{
-		public static readonly EducationStructureUnit Unit4 = EducationStructure.Tutorials[EducationTutorial.PersonalFinance].Units[4];
+		private static readonly EducationStructureUnit Unit4 = TutorialHelper.EducationStructureTutorial.Units[4];
 
 		public async ValueTask<TestScoreGrpcResponse> Unit4TextAsync(PersonalTaskTextGrpcRequest request) => 
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[1], request.IsRetry, request.Duration);

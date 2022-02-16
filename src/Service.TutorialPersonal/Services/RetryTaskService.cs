@@ -5,6 +5,7 @@ using Service.Core.Client.Services;
 using Service.Education.Structure;
 using Service.EducationRetry.Grpc;
 using Service.EducationRetry.Grpc.Models;
+using Service.TutorialPersonal.Helper;
 
 namespace Service.TutorialPersonal.Services
 {
@@ -24,7 +25,7 @@ namespace Service.TutorialPersonal.Services
 			TaskRetryStateGrpcResponse response = await _retryService.GetTaskRetryStateAsync(new GetTaskRetryStateGrpcRequest
 			{
 				UserId = userId,
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				Task = task
 			});
@@ -62,7 +63,7 @@ namespace Service.TutorialPersonal.Services
 			CommonGrpcResponse decreased = await _retryService.ClearTaskRetryStateAsync(new ClearTaskRetryStateGrpcRequest
 			{
 				UserId = userId,
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				Task = task
 			});

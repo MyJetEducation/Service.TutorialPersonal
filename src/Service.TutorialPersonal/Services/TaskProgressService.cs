@@ -11,6 +11,7 @@ using Service.Education.Structure;
 using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.TutorialPersonal.Helper;
 using Service.TutorialPersonal.Models;
 
 namespace Service.TutorialPersonal.Services
@@ -43,7 +44,7 @@ namespace Service.TutorialPersonal.Services
 			CommonGrpcResponse response = await _progressService.SetProgressAsync(new SetEducationProgressGrpcRequest
 			{
 				UserId = userId,
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unitId,
 				Task = taskId,
 				Value = progress ?? Progress.MaxProgress,
@@ -69,9 +70,6 @@ namespace Service.TutorialPersonal.Services
 
 		private async ValueTask<bool> ValidateProgress(Guid? userId, int unit, EducationStructureTask task, bool isRetry)
 		{
-			if (Program.ReloadedSettings(model => model.TestMode).Invoke())
-				return true;
-
 			TaskEducationProgressGrpcModel taskProgress = await GetTaskProgressAsync(userId, unit, task.Task);
 			bool notGame = task.TaskType != EducationTaskType.Game;
 
@@ -96,9 +94,6 @@ namespace Service.TutorialPersonal.Services
 
 		private async ValueTask<bool> ValidatePostition(Guid? userId, EducationStructureUnit unit, int task)
 		{
-			if (Program.ReloadedSettings(model => model.TestMode).Invoke())
-				return true;
-
 			if (unit.Unit == 1 && task == 1)
 				return true;
 
@@ -128,7 +123,7 @@ namespace Service.TutorialPersonal.Services
 
 			EducationProgressGrpcResponse progressResponse = await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
 			{
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				UserId = userId
 			});
@@ -141,7 +136,7 @@ namespace Service.TutorialPersonal.Services
 
 			UnitEducationProgressGrpcResponse unitProgressResponse = await _progressService.GetUnitProgressAsync(new GetUnitEducationProgressGrpcRequest
 			{
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				UserId = userId
 			});
@@ -151,7 +146,7 @@ namespace Service.TutorialPersonal.Services
 				return result;
 
 			var tasks = new List<TaskStateGrpcModel>();
-			IDictionary<int, EducationStructureTask> unitTasks = EducationHelper.GetUnit(EducationTutorial.PersonalFinance, unit).Tasks;
+			IDictionary<int, EducationStructureTask> unitTasks = EducationHelper.GetUnit(TutorialHelper.Tutorial, unit).Tasks;
 
 			foreach ((_, EducationStructureTask structureTask) in unitTasks)
 			{
@@ -191,7 +186,7 @@ namespace Service.TutorialPersonal.Services
 		{
 			TaskEducationProgressGrpcResponse taskProgressResponse = await _progressService.GetTaskProgressAsync(new GetTaskEducationProgressGrpcRequest
 			{
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				Task = task,
 				UserId = userId
@@ -204,7 +199,7 @@ namespace Service.TutorialPersonal.Services
 		{
 			TaskTypeProgressGrpcResponse typeProgressGrpcResponse = await _progressService.GetTaskTypeProgressAsync(new GetTaskTypeProgressGrpcRequest
 			{
-				Tutorial = EducationTutorial.PersonalFinance,
+				Tutorial = TutorialHelper.Tutorial,
 				Unit = unit,
 				UserId = userId
 			});

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Service.Education.Structure;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
@@ -14,8 +12,6 @@ namespace Service.TutorialPersonal.Services
 {
 	public partial class TutorialPersonalService : ITutorialPersonalService
 	{
-		private static readonly EducationStructureTutorial Tutorial = EducationStructure.Tutorials[EducationTutorial.PersonalFinance];
-
 		private readonly ITaskProgressService _taskProgressService;
 		private readonly IUserRewardService _userRewardService;
 
