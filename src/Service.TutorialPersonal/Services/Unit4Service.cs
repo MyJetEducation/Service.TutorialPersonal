@@ -12,7 +12,7 @@ namespace Service.TutorialPersonal.Services
 	{
 		private static readonly EducationStructureUnit Unit4 = TutorialHelper.EducationStructureTutorial.Units[4];
 
-		public async ValueTask<TestScoreGrpcResponse> Unit4TextAsync(PersonalTaskTextGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit4TextAsync(PersonalTaskTextGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[1], request.IsRetry, request.Duration);
 
 		public async ValueTask<TestScoreGrpcResponse> Unit4TestAsync(PersonalTaskTestGrpcRequest request)
@@ -28,10 +28,10 @@ namespace Service.TutorialPersonal.Services
 			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[2], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit4VideoAsync(PersonalTaskVideoGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit4VideoAsync(PersonalTaskVideoGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[3], request.IsRetry, request.Duration);
 
-		public async ValueTask<TestScoreGrpcResponse> Unit4CaseAsync(PersonalTaskCaseGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit4CaseAsync(PersonalTaskCaseGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[4], request.IsRetry, request.Duration, CountProgress(request.Value == 1));
 
 		public async ValueTask<TestScoreGrpcResponse> Unit4TrueFalseAsync(PersonalTaskTrueFalseGrpcRequest request)
@@ -47,7 +47,7 @@ namespace Service.TutorialPersonal.Services
 			return await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[5], request.IsRetry, request.Duration, progress);
 		}
 
-		public async ValueTask<TestScoreGrpcResponse> Unit4GameAsync(PersonalTaskGameGrpcRequest request) => 
+		public async ValueTask<TestScoreGrpcResponse> Unit4GameAsync(PersonalTaskGameGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[6], request.IsRetry, request.Duration);
 	}
 }

@@ -37,7 +37,7 @@ namespace Service.TutorialPersonal.Services
 			if (userId == null
 				|| !await ValidatePostition(userId, unit, taskId)
 				|| !await ValidateProgress(userId, unitId, task, isRetry))
-				return new TestScoreGrpcResponse {IsSuccess = false};
+				return new TestScoreGrpcResponse { IsSuccess = false };
 
 			_logger.LogDebug("Try to set progress for user {userId}...", userId);
 
@@ -214,7 +214,7 @@ namespace Service.TutorialPersonal.Services
 			{
 				int[] values = typeProgressGrpcModels.First(model => model.TaskType == taskType).Values;
 
-				return (int) Math.Round((double) values.Sum() / values.Length);
+				return (int)Math.Round((double)values.Sum() / values.Length);
 			}
 
 			result.Text = CountByType(EducationTaskType.Text);

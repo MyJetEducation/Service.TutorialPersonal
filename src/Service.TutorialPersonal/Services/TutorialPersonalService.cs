@@ -30,7 +30,7 @@ namespace Service.TutorialPersonal.Services
 
 			UserAchievementsGrpcResponse achievements = await _userRewardService.GetUserNewAchievementsAsync(new GetUserAchievementsGrpcRequest
 			{
-				UserId = userId, 
+				UserId = userId,
 				Unit = unit
 			});
 

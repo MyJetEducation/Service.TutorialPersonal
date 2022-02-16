@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Service.Core.Client.Models;
 using Service.Core.Client.Services;
-using Service.Education.Structure;
 using Service.EducationRetry.Grpc;
 using Service.EducationRetry.Grpc.Models;
 using Service.TutorialPersonal.Helper;

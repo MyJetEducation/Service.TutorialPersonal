@@ -5,13 +5,13 @@ using Service.TutorialPersonal.Grpc;
 
 namespace Service.TutorialPersonal.Client
 {
-    public static class AutofacHelper
-    {
-        public static void RegisterTutorialPersonalClient(this ContainerBuilder builder, string grpcServiceUrl)
-        {
-            var factory = new TutorialPersonalClientFactory(grpcServiceUrl);
+	public static class AutofacHelper
+	{
+		public static void RegisterTutorialPersonalClient(this ContainerBuilder builder, string grpcServiceUrl)
+		{
+			var factory = new TutorialPersonalClientFactory(grpcServiceUrl);
 
-            builder.RegisterInstance(factory.GetTutorialPersonalService()).As<ITutorialPersonalService>().SingleInstance();
-        }
-    }
+			builder.RegisterInstance(factory.GetTutorialPersonalService()).As<ITutorialPersonalService>().SingleInstance();
+		}
+	}
 }
