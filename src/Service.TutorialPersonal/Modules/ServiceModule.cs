@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Microsoft.Extensions.Logging;
 using Service.EducationProgress.Client;
 using Service.EducationRetry.Client;
 using Service.UserProgress.Client;
