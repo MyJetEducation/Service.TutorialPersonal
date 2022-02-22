@@ -10,8 +10,9 @@ namespace Service.TutorialPersonal.Modules
 	{
 		protected override void Load(ContainerBuilder builder)
 		{
+			builder.RegisterEducationRetryClient(Program.Settings.EducationRetryServiceUrl, Program.LogFactory.CreateLogger(typeof(EducationRetryClientFactory)));
+
 			builder.RegisterEducationProgressClient(Program.Settings.EducationProgressServiceUrl);
-			builder.RegisterEducationRetryClient(Program.Settings.EducationRetryServiceUrl);
 			builder.RegisterUserRewardClient(Program.Settings.UserRewardServiceUrl);
 			builder.RegisterUserProgressClient(Program.Settings.UserProgressServiceUrl);
 		}
