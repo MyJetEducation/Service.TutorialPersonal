@@ -92,27 +92,40 @@ namespace Service.TutorialPersonal.Services
 			return true;
 		}
 
-		private async ValueTask<bool> ValidatePostition(Guid? userId, EducationStructureUnit unit, int task)
+		private async ValueTask<bool> ValidatePostition(Guid? userId, EducationStructureUnit unit, int taskIndex)
 		{
-			if (unit.Unit == 1 && task == 1)
-				return true;
+			int unitIndex = unit.Unit;
 
-			EducationStructureUnit prevUnit = AnswerHelper.Tutorial.Units[unit.Unit];
-			EducationStructureTask prevTask;
-
-			if (unit.Unit > 1 && task == 1)
+			//If start unit
+			if (taskIndex == 1)
 			{
-				prevUnit = AnswerHelper.Tutorial.Units[unit.Unit - 1];
-				prevTask = unit.Tasks[unit.Tasks.Values.Count - 1];
+				//First - accept
+				if (unitIndex == 1)
+					return true;
+
+				//Else - if prev unit all tasks score >=80
+				int prevUnitIndex = unitIndex - 1;
+				UnitStateGrpcModel prevUnitProgress = await GetUnitProgressAsync(userId, prevUnitIndex);
+				if (prevUnitProgress == null)
+				{
+					_logger.LogError("Can't get progress of previous unit ({unit}) for user {userId}", prevUnitIndex, userId);
+					return false;
+				}
+
+				bool prevUnitIsOk = prevUnitProgress.Tasks.All(model => model.TestScore.IsOkProgress());
+				if (!prevUnitIsOk)
+					_logger.LogError("Can't start new unit, prev unit ({prev}) not finished completely for user {userId}", prevUnitIndex, userId);
+
+				return prevUnitIsOk;
 			}
-			else
-				prevTask = unit.Tasks[task - 1];
 
-			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, prevUnit.Unit, prevTask.Task);
+			//If continue unit
+			TaskEducationProgressGrpcModel progress = await GetTaskProgressAsync(userId, unitIndex, unit.Tasks[taskIndex - 1].Task);
 
+			//Prev task must have progress
 			bool progressHasProgress = progress?.HasProgress == true;
 			if (!progressHasProgress)
-				_logger.LogError("Invalid position while set task progress for user {userId}", userId);
+				_logger.LogError("Invalid position while set task progress for user {userId}, prev task has no progress", userId);
 
 			return progressHasProgress;
 		}
