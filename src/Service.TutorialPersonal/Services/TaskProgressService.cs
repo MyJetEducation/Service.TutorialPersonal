@@ -157,9 +157,9 @@ namespace Service.TutorialPersonal.Services
 					break;
 
 				int progressValue = taskProgress.Value;
-				bool lowProgress = !progressValue.IsMaxProgress();
+				bool acceptByProgress = !progressValue.IsMaxProgress() || taskProgress.HasProgress && structureTask.TaskType == EducationTaskType.Game;
 				bool inRetryState = await _retryTaskService.TaskInRetryStateAsync(userId, unit, taskId);
-				bool canRetryTask = !inRetryState && lowProgress;
+				bool canRetryTask = !inRetryState && acceptByProgress;
 
 				tasks.Add(new TaskStateGrpcModel
 				{
