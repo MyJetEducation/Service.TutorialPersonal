@@ -6,18 +6,15 @@ namespace Service.TutorialPersonal.Mappers
 {
 	public static class ProgressInfoMapper
 	{
-		public static FinishStateGrpcResponse ToGrpcModel(this TaskTypeProgressInfo info, UserAchievement[] achievements)
+		public static FinishStateGrpcResponse ToGrpcModel(this TaskTypeProgressInfo info, UserAchievement[] achievements) => new()
 		{
-			return new FinishStateGrpcResponse
-			{
-				Case = info.Case,
-				TrueFalse = info.TrueFalse,
-				Game = info.Game,
-				Test = info.Test,
-				Text = info.Text,
-				Video = info.Video,
-				Achievements = achievements
-			};
-		}
+			Case = info.Case,
+			TrueFalse = info.TrueFalse,
+			Game = info.Game,
+			Test = info.Test,
+			Text = info.Text,
+			Video = info.Video,
+			Achievements = achievements
+		};
 	}
 }

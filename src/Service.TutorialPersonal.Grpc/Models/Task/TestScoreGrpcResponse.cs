@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
+using Service.TutorialPersonal.Grpc.Models.State;
 
-namespace Service.TutorialPersonal.Grpc.Models.State
+namespace Service.TutorialPersonal.Grpc.Models.Task
 {
 	[DataContract]
 	public class TestScoreGrpcResponse

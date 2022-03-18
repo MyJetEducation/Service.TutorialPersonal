@@ -11,6 +11,7 @@ using Service.Education.Structure;
 using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
+using Service.TutorialPersonal.Grpc.Models.Task;
 using Service.TutorialPersonal.Helper;
 using Service.TutorialPersonal.Models;
 

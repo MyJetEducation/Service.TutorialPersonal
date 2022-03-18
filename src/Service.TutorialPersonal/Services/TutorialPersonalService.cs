@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Service.TutorialPersonal.Grpc;
-using Service.TutorialPersonal.Grpc.Models;
 using Service.TutorialPersonal.Grpc.Models.State;
 using Service.TutorialPersonal.Mappers;
 using Service.TutorialPersonal.Models;
