@@ -10,7 +10,7 @@ namespace Service.TutorialPersonal.Services
 {
 	public partial class TutorialPersonalService
 	{
-		private static readonly EducationStructureUnit Unit4 = TutorialHelper.EducationStructureTutorial.Units[4];
+		private static readonly EducationStructureUnit Unit4 = TutorialHelper.StructureTutorial.Units[4];
 
 		public async ValueTask<TestScoreGrpcResponse> Unit4TextAsync(PersonalTaskTextGrpcRequest request) =>
 			await _taskProgressService.SetTaskProgressAsync(request.UserId, Unit4, Unit4.Tasks[1], request.IsRetry, request.Duration);

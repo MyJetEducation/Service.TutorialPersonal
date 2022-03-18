@@ -6,6 +6,6 @@ namespace Service.TutorialPersonal.Helper
 	{
 		public static readonly EducationTutorial Tutorial = EducationTutorial.PersonalFinance;
 
-		public static readonly EducationStructureTutorial EducationStructureTutorial = EducationStructure.Tutorials[Tutorial];
+		public static readonly EducationStructureTutorial StructureTutorial = EducationStructure.Tutorials[Tutorial];
 	}
 }

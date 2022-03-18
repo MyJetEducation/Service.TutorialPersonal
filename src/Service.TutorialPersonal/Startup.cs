@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using MyJetWallet.Sdk.GrpcSchema;
 using MyJetWallet.Sdk.Service;
 using Prometheus;
+using Service.Core.Client.Constants;
 using Service.TutorialPersonal.Grpc;
 using Service.TutorialPersonal.Modules;
 using Service.TutorialPersonal.Services;
@@ -21,7 +22,7 @@ namespace Service.TutorialPersonal
 		{
 			services.BindCodeFirstGrpc();
 			services.AddHostedService<ApplicationLifetimeManager>();
-			services.AddMyTelemetry("ED-", Program.Settings.ZipkinUrl);
+			services.AddMyTelemetry(Configuration.TelemetryPrefix, Program.Settings.ZipkinUrl);
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,7 +41,7 @@ namespace Service.TutorialPersonal
 
 				endpoints.MapGrpcSchemaRegistry();
 
-				endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909"); });
+				endpoints.MapGet("/", async context => await context.Response.WriteAsync("API endpoint"));
 			});
 		}
 
