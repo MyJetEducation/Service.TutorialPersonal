@@ -160,6 +160,25 @@ namespace Service.TutorialPersonal.Services
 
 			var tasks = new List<TaskStateGrpcModel>();
 			IDictionary<int, EducationStructureTask> unitTasks = EducationHelper.GetUnit(TutorialHelper.Tutorial, unit).Tasks;
+			
+			bool hasRetryCount = await _retryTaskService.HasRetryCountAsync(userId);
+			DateTime? canRetryDate = null;
+
+			async Task<bool> CanRetryByTime(DateTime? checkDate)
+			{
+				if (checkDate == null)
+					return false;
+
+				if (canRetryDate == null || checkDate < canRetryDate)
+				{
+					bool canRetry = await _retryTaskService.CanRetryByTimeAsync(userId, canRetryDate);
+					if (canRetry)
+						canRetryDate = checkDate;
+					return canRetry;
+				}
+
+				return true;
+			}
 
 			foreach ((_, EducationStructureTask structureTask) in unitTasks)
 			{
@@ -181,8 +200,8 @@ namespace Service.TutorialPersonal.Services
 					RetryInfo = new TaskRetryInfoGrpcModel
 					{
 						InRetry = inRetryState,
-						CanRetryByCount = canRetryTask && await _retryTaskService.HasRetryCountAsync(userId),
-						CanRetryByTime = canRetryTask && await _retryTaskService.CanRetryByTimeAsync(userId, taskProgress.Date)
+						CanRetryByCount = canRetryTask && hasRetryCount,
+						CanRetryByTime = canRetryTask && await CanRetryByTime(taskProgress.Date)
 					}
 				});
 			}
