@@ -162,23 +162,7 @@ namespace Service.TutorialPersonal.Services
 			IDictionary<int, EducationStructureTask> unitTasks = EducationHelper.GetUnit(TutorialHelper.Tutorial, unit).Tasks;
 			
 			bool hasRetryCount = await _retryTaskService.HasRetryCountAsync(userId);
-			DateTime? canRetryDate = null;
-
-			async Task<bool> CanRetryByTime(DateTime? checkDate)
-			{
-				if (checkDate == null)
-					return false;
-
-				if (canRetryDate == null || checkDate < canRetryDate)
-				{
-					bool canRetry = await _retryTaskService.CanRetryByTimeAsync(userId, canRetryDate);
-					if (canRetry)
-						canRetryDate = checkDate;
-					return canRetry;
-				}
-
-				return true;
-			}
+			DateTime? lastRetryDate = await _retryTaskService.GetRetryLastDateAsync(userId);
 
 			foreach ((_, EducationStructureTask structureTask) in unitTasks)
 			{
@@ -201,7 +185,7 @@ namespace Service.TutorialPersonal.Services
 					{
 						InRetry = inRetryState,
 						CanRetryByCount = canRetryTask && hasRetryCount,
-						CanRetryByTime = canRetryTask && await CanRetryByTime(taskProgress.Date)
+						CanRetryByTime = canRetryTask && _retryTaskService.CanRetryByTimeAsync(taskProgress.Date, lastRetryDate)
 					}
 				});
 			}

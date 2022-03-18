@@ -33,20 +33,17 @@ namespace Service.TutorialPersonal.Services
 			return response.InRetry;
 		}
 
-		public async ValueTask<bool> CanRetryByTimeAsync(Guid? userId, DateTime? progressDate)
+		public async ValueTask<DateTime?> GetRetryLastDateAsync(Guid? userId)
 		{
-			if (progressDate == null || !OneDayGone(progressDate.Value))
-				return false;
-
-			RetryLastDateGrpcResponse response = await _retryService.Service.GetRetryLastDateAsync(new GetRetryLastDateGrpcRequest
+			return (await _retryService.Service.GetRetryLastDateAsync(new GetRetryLastDateGrpcRequest
 			{
 				UserId = userId
-			});
-
-			DateTime? date = response?.Date;
-
-			return date == null || OneDayGone(date.Value);
+			}))?.Date;
 		}
+
+		public bool CanRetryByTimeAsync(DateTime? progressDate, DateTime? lastRetryDate) => progressDate != null 
+			&& OneDayGone(progressDate.Value) 
+			&& (lastRetryDate == null || OneDayGone(lastRetryDate.Value));
 
 		public async ValueTask<bool> HasRetryCountAsync(Guid? userId)
 		{

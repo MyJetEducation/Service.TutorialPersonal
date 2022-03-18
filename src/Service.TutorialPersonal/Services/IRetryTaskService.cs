@@ -7,10 +7,12 @@ namespace Service.TutorialPersonal.Services
 	{
 		ValueTask<bool> TaskInRetryStateAsync(Guid? userId, int unit, int task);
 
-		ValueTask<bool> CanRetryByTimeAsync(Guid? userId, DateTime? progressDate);
+		bool CanRetryByTimeAsync(DateTime? progressDate, DateTime? lastRetryDate);
 
 		ValueTask<bool> HasRetryCountAsync(Guid? userId);
 
 		ValueTask<bool> ClearTaskRetryStateAsync(Guid? userId, int unit, int task);
+
+		ValueTask<DateTime?> GetRetryLastDateAsync(Guid? userId);
 	}
 }
