@@ -71,6 +71,6 @@ namespace Service.TutorialPersonal.Services
 			return decreased.IsSuccess;
 		}
 
-		private bool OneDayGone(DateTime date) => _systemClock.Now.Subtract(date).Days >= 1;
+		private bool OneDayGone(DateTime date) => _systemClock.Now.Subtract(date).TotalDays >= 1;
 	}
 }
