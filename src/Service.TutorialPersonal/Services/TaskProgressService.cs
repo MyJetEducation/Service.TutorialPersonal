@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Service.Core.Client.Extensions;
 using Service.Core.Client.Models;
 using Service.Education.Constants;
 using Service.Education.Extensions;
@@ -113,7 +114,7 @@ namespace Service.TutorialPersonal.Services
 					return false;
 				}
 
-				bool prevUnitIsOk = prevUnitProgress.Tasks.All(model => model.TestScore.IsOkProgress());
+				bool prevUnitIsOk = prevUnitProgress.Tasks.ForAll(model => model.TestScore.IsOkProgress());
 				if (!prevUnitIsOk)
 					_logger.LogError("Can't start new unit, prev unit ({prev}) not finished completely for user {userId}", prevUnitIndex, userId);
 
