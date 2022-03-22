@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Service.Core.Client.Extensions;
 using Service.Core.Client.Models;
 using Service.Education.Constants;
 using Service.Education.Extensions;
@@ -107,18 +106,14 @@ namespace Service.TutorialPersonal.Services
 
 				//Else - if prev unit all tasks score >=80
 				int prevUnitIndex = unitIndex - 1;
-				UnitStateGrpcModel prevUnitProgress = await GetUnitProgressAsync(userId, prevUnitIndex);
+				EducationProgressGrpcResponse prevUnitProgress = await GetUnitProgressTasks(userId, prevUnitIndex);
 				if (prevUnitProgress == null)
 				{
 					_logger.LogError("Can't get progress of previous unit ({unit}) for user {userId}", prevUnitIndex, userId);
 					return false;
 				}
 
-				bool prevUnitIsOk = prevUnitProgress.Tasks.ForAll(model => model.TestScore.IsOkProgress());
-				if (!prevUnitIsOk)
-					_logger.LogError("Can't start new unit, prev unit ({prev}) not finished completely for user {userId}", prevUnitIndex, userId);
-
-				return prevUnitIsOk;
+				return prevUnitProgress.TasksPassed == EducationStructure.TasksCount;
 			}
 
 			//If continue unit
@@ -132,19 +127,23 @@ namespace Service.TutorialPersonal.Services
 			return progressHasProgress;
 		}
 
+		public async ValueTask<EducationProgressGrpcResponse> GetUnitProgressTasks(Guid? userId, int unit) => await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
+		{
+			Tutorial = TutorialHelper.Tutorial,
+			Unit = unit,
+			UserId = userId
+		});
+
 		public async ValueTask<UnitStateGrpcModel> GetUnitProgressAsync(Guid? userId, int unit)
 		{
-			var result = new UnitStateGrpcModel();
-
-			EducationProgressGrpcResponse progressResponse = await _progressService.GetProgressAsync(new GetEducationProgressGrpcRequest
-			{
-				Tutorial = TutorialHelper.Tutorial,
-				Unit = unit,
-				UserId = userId
-			});
+			EducationProgressGrpcResponse progressResponse = await GetUnitProgressTasks(userId, unit);
 
 			int unitProgress = (progressResponse?.TaskScore).GetValueOrDefault();
-			result.TestScore = unitProgress;
+
+			var result = new UnitStateGrpcModel
+			{
+				TestScore = unitProgress
+			};
 
 			if (unitProgress.IsMinProgress())
 				return result;
