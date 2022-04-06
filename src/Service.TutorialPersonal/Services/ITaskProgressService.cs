@@ -9,10 +9,10 @@ namespace Service.TutorialPersonal.Services
 {
 	public interface ITaskProgressService
 	{
-		ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(Guid? userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, int? progress = null);
+		ValueTask<TestScoreGrpcResponse> SetTaskProgressAsync(string userId, EducationStructureUnit unit, EducationStructureTask task, bool isRetry, TimeSpan duration, int? progress = null);
 
-		ValueTask<UnitStateGrpcModel> GetUnitProgressAsync(Guid? userId, int unit);
+		ValueTask<UnitStateGrpcModel> GetUnitProgressAsync(string userId, int unit);
 
-		ValueTask<TaskTypeProgressInfo> GetTotalProgressAsync(Guid? userId, int? unit = null);
+		ValueTask<TaskTypeProgressInfo> GetTotalProgressAsync(string userId, int? unit = null);
 	}
 }
