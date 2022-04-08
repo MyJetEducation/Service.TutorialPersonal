@@ -7,7 +7,7 @@ namespace Service.TutorialPersonal.Grpc.Models.Task
 	public class TaskTextGrpcRequest
 	{
 		[DataMember(Order = 1)]
-		public Guid? UserId { get; set; }
+		public string UserId { get; set; }
 
 		[DataMember(Order = 2)]
 		public bool IsRetry { get; set; }

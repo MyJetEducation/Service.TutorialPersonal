@@ -7,7 +7,7 @@ namespace Service.TutorialPersonal.Grpc.Models.Task
 	public class TaskTrueFalseGrpcRequest
 	{
 		[DataMember(Order = 1)]
-		public Guid? UserId { get; set; }
+		public string UserId { get; set; }
 
 		[DataMember(Order = 2)]
 		public TaskTrueFalseAnswerGrpcModel[] Answers { get; set; }

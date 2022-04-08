@@ -20,7 +20,7 @@ namespace Service.TutorialPersonal.Services
 			_systemClock = systemClock;
 		}
 
-		public async ValueTask<bool> TaskInRetryStateAsync(Guid? userId, int unit, int task)
+		public async ValueTask<bool> TaskInRetryStateAsync(string userId, int unit, int task)
 		{
 			TaskRetryStateGrpcResponse response = await _retryService.Service.GetTaskRetryStateAsync(new GetTaskRetryStateGrpcRequest
 			{
@@ -33,7 +33,7 @@ namespace Service.TutorialPersonal.Services
 			return response.InRetry;
 		}
 
-		public async ValueTask<DateTime?> GetRetryLastDateAsync(Guid? userId)
+		public async ValueTask<DateTime?> GetRetryLastDateAsync(string userId)
 		{
 			return (await _retryService.Service.GetRetryLastDateAsync(new GetRetryLastDateGrpcRequest
 			{
@@ -45,7 +45,7 @@ namespace Service.TutorialPersonal.Services
 			&& OneDayGone(progressDate.Value) 
 			&& (lastRetryDate == null || OneDayGone(lastRetryDate.Value));
 
-		public async ValueTask<bool> HasRetryCountAsync(Guid? userId)
+		public async ValueTask<bool> HasRetryCountAsync(string userId)
 		{
 			RetryCountGrpcResponse retryResponse = await _retryService.Service.GetRetryCountAsync(new GetRetryCountGrpcRequest
 			{
@@ -55,7 +55,7 @@ namespace Service.TutorialPersonal.Services
 			return retryResponse?.Count > 0;
 		}
 
-		public async ValueTask<bool> ClearTaskRetryStateAsync(Guid? userId, int unit, int task)
+		public async ValueTask<bool> ClearTaskRetryStateAsync(string userId, int unit, int task)
 		{
 			CommonGrpcResponse decreased = await _retryService.TryCall(service => service.ClearTaskRetryStateAsync(new ClearTaskRetryStateGrpcRequest
 			{
