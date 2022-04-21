@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Service.Core.Client.Models;
 using Service.Education.Constants;
+using Service.Education.Contracts.State;
+using Service.Education.Contracts.Task;
 using Service.Education.Extensions;
 using Service.Education.Helpers;
 using Service.Education.Structure;
 using Service.EducationProgress.Grpc;
 using Service.EducationProgress.Grpc.Models;
-using Service.TutorialPersonal.Grpc.Models.State;
-using Service.TutorialPersonal.Grpc.Models.Task;
 using Service.TutorialPersonal.Helper;
 using Service.TutorialPersonal.Models;
 
@@ -134,13 +134,13 @@ namespace Service.TutorialPersonal.Services
 			UserId = userId
 		});
 
-		public async ValueTask<UnitStateGrpcModel> GetUnitProgressAsync(string userId, int unit)
+		public async ValueTask<StateGrpcModel> GetUnitProgressAsync(string userId, int unit)
 		{
 			EducationProgressGrpcResponse progressResponse = await GetUnitProgressTasks(userId, unit);
 
 			int unitProgress = (progressResponse?.TaskScore).GetValueOrDefault();
 
-			var result = new UnitStateGrpcModel
+			var result = new StateGrpcModel
 			{
 				TestScore = unitProgress
 			};
@@ -191,7 +191,7 @@ namespace Service.TutorialPersonal.Services
 				});
 			}
 
-			return new UnitStateGrpcModel
+			return new StateGrpcModel
 			{
 				Unit = unit,
 				TestScore = unitProgress,

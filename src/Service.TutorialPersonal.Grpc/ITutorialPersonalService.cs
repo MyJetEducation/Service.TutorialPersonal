@@ -1,7 +1,7 @@
 ﻿using System.ServiceModel;
 using System.Threading.Tasks;
-using Service.TutorialPersonal.Grpc.Models.State;
-using Service.TutorialPersonal.Grpc.Models.Task;
+using Service.Education.Contracts.State;
+using Service.Education.Contracts.Task;
 
 namespace Service.TutorialPersonal.Grpc
 {
