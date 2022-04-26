@@ -13,7 +13,7 @@
     <PackageReference Include="MyJetEducation.Service.EducationProgress.Client" Version="1.0.24" />
     <PackageReference Include="MyJetEducation.Service.EducationRetry.Client" Version="1.0.8" />
     <PackageReference Include="MyJetEducation.Service.UserProgress.Client" Version="1.0.13" />
-    <PackageReference Include="MyJetEducation.Service.UserReward.Client" Version="1.0.9" />
+    <PackageReference Include="MyJetEducation.Service.UserReward.Client" Version="1.0.12" />
     <PackageReference Include="MyJetEducation.Service.Grpc" Version="1.0.7" />
   </ItemGroup>
 
