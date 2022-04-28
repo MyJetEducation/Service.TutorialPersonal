@@ -18,7 +18,7 @@ namespace Service.TutorialPersonal.Services
 		{
 			ITaskTestAnswer[] answers = request.Answers;
 
-			int progress = CheckAnswer(20, answers, 1, 2, 3)
+			int progress = CheckAnswer(20, answers, 1, 3)
 				+ CheckAnswer(20, answers, 2, 1)
 				+ CheckAnswer(20, answers, 3, 1, 3)
 				+ CheckAnswer(20, answers, 4, 2)
